@@ -807,17 +807,20 @@ const gBumpR = (x, y) => -(x + 1.89) * 0.7474 - (y - 0.99) * 0.6643;
 const SILL_X0 = XRA + ARCH.r - 0.03, SILL_X1 = XFA - ARCH.r + 0.03;
 function buildPolys() {
   // large gloss-black hexagonal grille spanning between the headlamps (reference front view)
-  POLY.grilleUp = polyArr([[-0.1, 0.832], [0.42, 0.828], [0.452, 0.79], [0.44, 0.72], [0.37, 0.605], [-0.1, 0.595]]);
-  // lower grille: wide trapezoid, wider at the top (reference front view)
-  POLY.grilleLow = polyArr([[-0.1, 0.462], [0.52, 0.462], [0.56, 0.435], [0.48, 0.29], [0.40, 0.262], [-0.1, 0.262]]);
+  // upper grille: wide hexagon from lamp to lamp, sides sloping in to a wide bottom edge (reference front view)
+  POLY.grilleUp = polyArr([[-0.1, 0.832], [0.45, 0.828], [0.468, 0.808], [0.33, 0.60], [-0.1, 0.595]]);
+  // lower grille: wide black band running out to the inner tips of the corner intakes
+  POLY.grilleLow = polyArr([[-0.1, 0.452], [0.60, 0.452], [0.64, 0.425], [0.52, 0.27], [-0.1, 0.262]]);
   // full-width black lower diffuser band (reference rear view)
   POLY.diffuser = polyArr([[-0.1, 0.445], [0.56, 0.445], [0.66, 0.405], [0.71, 0.30], [0.68, 0.22], [-0.1, 0.22]]);
   // corner intakes: arrow-shaped black openings pointing inward, with a vertical LED blade on the outer edge
   POLY.intake = polyArr([FP(0.855, 0.605), FP(0.75, 0.592), FP(0.66, 0.468), FP(0.75, 0.318), FP(0.855, 0.300), FP(0.875, 0.45)]);
   POLY.fang = polyArr([FP(0.846, 0.585), FP(0.828, 0.588), FP(0.824, 0.330), FP(0.842, 0.326)]);
   // slim headlamps that sweep back along the wing to a point (reference side + 3/4 view)
-  POLY.head = polyArr([FP(0.46, 0.826), FP(0.56, 0.850), FP(0.70, 0.866), FP(0.80, 0.876), FP(0.855, 0.882), SP(1.86, 0.888), SP(1.74, 0.902), SP(1.62, 0.914), SP(1.66, 0.904), SP(1.76, 0.880), SP(1.86, 0.848), SP(1.90, 0.826), FP(0.85, 0.728), FP(0.76, 0.732), FP(0.62, 0.748), FP(0.52, 0.765), FP(0.46, 0.79)]);
-  POLY.drl = polyArr([[-0.1, 0.832], FP(0.46, 0.823), FP(0.56, 0.847), FP(0.70, 0.863), FP(0.80, 0.873), FP(0.855, 0.879), SP(1.86, 0.885), SP(1.74, 0.899), SP(1.625, 0.911), SP(1.645, 0.909), SP(1.75, 0.894), SP(1.86, 0.876), FP(0.85, 0.869), FP(0.80, 0.864), FP(0.70, 0.853), FP(0.56, 0.838), FP(0.46, 0.814), [-0.1, 0.823]]);
+  // big wedge lamps: narrow at the grille, deep at the outer corner, sweeping up and back along the wing
+  POLY.head = polyArr([FP(0.478, 0.826), FP(0.56, 0.850), FP(0.70, 0.870), FP(0.80, 0.882), FP(0.855, 0.889), SP(1.86, 0.893), SP(1.74, 0.904), SP(1.62, 0.914), SP(1.66, 0.904), SP(1.76, 0.876), SP(1.86, 0.836), SP(1.90, 0.80), FP(0.86, 0.69), FP(0.76, 0.705), FP(0.60, 0.725), FP(0.50, 0.755), FP(0.478, 0.79)]);
+  // thicker LED light guide along the lamp top edge
+  POLY.drl = polyArr([[-0.1, 0.832], FP(0.478, 0.823), FP(0.56, 0.847), FP(0.70, 0.867), FP(0.80, 0.879), FP(0.855, 0.886), SP(1.86, 0.890), SP(1.74, 0.901), SP(1.625, 0.911), SP(1.645, 0.909), SP(1.75, 0.890), SP(1.86, 0.870), FP(0.85, 0.866), FP(0.80, 0.860), FP(0.70, 0.849), FP(0.56, 0.830), FP(0.478, 0.808), [-0.1, 0.823]]);
   // wedge tail lamps: deep at the rear corner, tapering forward along the quarter, joined across the boot by an LED bar
   POLY.tail = polyArr([RP(0.30, 1.030), RP(0.55, 1.036), RP(0.74, 1.040), RP(0.84, 1.040), RSP(-1.98, 1.040), RSP(-1.85, 1.038), RSP(-1.72, 1.034), RSP(-1.68, 1.030), RSP(-1.74, 1.010), RSP(-1.86, 0.972), RSP(-1.93, 0.912), RSP(-2.00, 0.885), RP(0.84, 0.875), RP(0.74, 0.900), RP(0.62, 0.945), RP(0.48, 0.985), RP(0.30, 1.000)]);
   POLY.tailLED = polyArr([[-0.1, 1.020], RP(0.30, 1.024), RP(0.55, 1.030), RP(0.74, 1.034), RP(0.84, 1.034), RSP(-1.98, 1.034), RSP(-1.85, 1.032), RSP(-1.72, 1.028), RSP(-1.70, 1.026), RSP(-1.74, 1.021), RSP(-1.86, 1.024), RSP(-1.98, 1.027), RP(0.84, 1.027), RP(0.74, 1.027), RP(0.55, 1.022), RP(0.30, 1.016), [-0.1, 1.012]]);
@@ -827,7 +830,7 @@ function buildPolys() {
   POLY.pocketF = ellipsePoly(0.06, 0.924, 0.085, 0.026);
   POLY.pocketR = ellipsePoly(-0.96, 0.971, 0.08, 0.025);
   POLY.flap = roundRectPoly(-1.395, 0.985, 0.082, 0.064, 0.026);
-  yBF = linear([[-1, 0.846], [FP(0.46, 0.846)[0], 0.846], [FP(0.56, 0.860)[0], 0.860], [FP(0.70, 0.876)[0], 0.876], [FP(0.80, 0.886)[0], 0.886], [FP(0.855, 0.892)[0], 0.892], [SP(1.86, 0.894)[0], 0.894], [SP(1.70, 0.90)[0], 0.90], [9, 0.90]]);
+  yBF = linear([[-1, 0.846], [FP(0.478, 0.846)[0], 0.846], [FP(0.56, 0.860)[0], 0.860], [FP(0.70, 0.880)[0], 0.880], [FP(0.80, 0.892)[0], 0.892], [FP(0.855, 0.899)[0], 0.899], [SP(1.86, 0.903)[0], 0.903], [SP(1.70, 0.91)[0], 0.91], [9, 0.91]]);
 }
 
 /* =====================================================================
@@ -1238,23 +1241,20 @@ function canvasTex(w, h, draw, { color = true, repeat = false, aniso = 4 } = {})
   return t;
 }
 function makeCarTextures() {
-  TEX.hex = canvasTex(512, 443, (g, w, h) => { // 2× resolution grille mesh
-    g.fillStyle = '#030304'; g.fillRect(0, 0, w, h);
-    const r = w / (4 * Math.sqrt(3)), dx = Math.sqrt(3) * r, dy = 1.5 * r;
-    for (let row = -1; row <= 5; row++) for (let col = -1; col <= 5; col++) {
-      const cx = col * dx + (row & 1 ? dx / 2 : 0), cy = row * dy;
-      g.beginPath();
-      for (let k = 0; k < 6; k++) { const a = (60 * k - 30) * DEG; g.lineTo(cx + Math.cos(a) * r * 0.86, cy + Math.sin(a) * r * 0.86); }
-      g.closePath();
-      const gr = g.createRadialGradient(cx, cy - r * 0.3, 1, cx, cy, r); gr.addColorStop(0, '#000'); gr.addColorStop(1, '#16181b');
-      g.fillStyle = gr; g.fill(); g.lineWidth = 3 * (w / 256); g.strokeStyle = '#3a3e44'; g.stroke();
+  // upper grille: gloss-black field with a large diamond lattice (one diamond per tile), as in the reference
+  TEX.hex = canvasTex(512, 224, (g, w, h) => {
+    g.fillStyle = '#020203'; g.fillRect(0, 0, w, h);
+    g.lineCap = 'square';
+    for (const [lw, col] of [[14, '#0c0d10'], [6, '#2a2d33'], [2, '#4a4e56']]) {
+      g.lineWidth = lw; g.strokeStyle = col;
+      for (const ox of [-w, 0, w]) { g.beginPath(); g.moveTo(ox, 0); g.lineTo(ox + w, h); g.moveTo(ox + w, 0); g.lineTo(ox, h); g.stroke(); }
     }
   }, { repeat: true });
   TEX.slat = canvasTex(256, 256, (g, w, h) => {
     g.fillStyle = '#050506'; g.fillRect(0, 0, w, h);
     for (let i = 0; i < 4; i++) { const y = i * 64 + 18; const gr = g.createLinearGradient(0, y, 0, y + 22); gr.addColorStop(0, '#34373c'); gr.addColorStop(1, '#0d0e10'); g.fillStyle = gr; g.fillRect(0, y, w, 22); }
-    g.strokeStyle = '#1d1f22'; g.lineWidth = 2;
-    for (let i = -8; i < 16; i++) { g.beginPath(); g.moveTo(i * 32, 0); g.lineTo(i * 32 + 128, h); g.stroke(); g.beginPath(); g.moveTo(i * 32 + 128, 0); g.lineTo(i * 32, h); g.stroke(); }
+    // vertical dividers between the horizontal slats (reference lower grille)
+    g.fillStyle = '#25282d'; for (const x of [0, w / 2]) g.fillRect(x, 0, 6, h);
   }, { repeat: true });
   TEX.tyre = canvasTex(2048, 1024, (g, w, h) => {
     g.fillStyle = '#18181a'; g.fillRect(0, 0, w, h);
@@ -1327,9 +1327,9 @@ function makeMaterials() {
   MAT.seam = S({ color: 0x020203, roughness: 1 });
   MAT.inner = S({ color: 0x17181c, roughness: 0.92, side: THREE.BackSide });
   MAT.chrome = S({ color: 0xffffff, metalness: 1, roughness: 0.07 });
-  MAT.darkChrome = S({ color: 0x101114, metalness: 0.6, roughness: 0.22, envMapIntensity: 0.45, side: THREE.DoubleSide }); // dark lamp housings read black on the white studio
-  MAT.grille = P({ color: 0xffffff, map: TEX.hex, metalness: 0.3, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08 });
-  MAT.grilleLow = S({ color: 0xffffff, map: TEX.slat, metalness: 0.1, roughness: 0.62 });
+  MAT.darkChrome = S({ color: 0x0a0b0d, metalness: 0.6, roughness: 0.22, envMapIntensity: 0.25, side: THREE.DoubleSide }); // dark lamp housings read black on the white studio
+  MAT.grille = P({ color: 0xffffff, map: TEX.hex, metalness: 0.2, roughness: 0.28, clearcoat: 0.6, clearcoatRoughness: 0.08, envMapIntensity: 0.3 }); // reads gloss black on the light studio
+  MAT.grilleLow = S({ color: 0xffffff, map: TEX.slat, metalness: 0.1, roughness: 0.62, envMapIntensity: 0.6 });
   MAT.glass = scanPatch(new THREE.MeshPhysicalMaterial({ color: 0x03060a, metalness: 0, roughness: 0.025, transparent: true, opacity: 0.84, depthWrite: false, envMapIntensity: 0.5, clearcoat: 1, clearcoatRoughness: 0.02 }), glassAlpha);
   MAT.lens = scanPatch(new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.02, transparent: true, opacity: 0.06, depthWrite: false, envMapIntensity: 1.6 }), glassAlpha);
   MAT.drl = S({ color: 0x000000, emissive: 0xf2f5ff, emissiveIntensity: 2.6, roughness: 0.4 });
@@ -1447,8 +1447,8 @@ const PARTS = {
   liner: ['matte', 'body', 1, [0, 0.55, 0], 0.34, 0],
   under: ['matte', 'body', 0, null, 0, 0],
 };
-const UV_GRILLE = (x, y, z) => [z / 0.08, y / 0.0693];
-const UV_SLAT = (x, y, z) => [z / 0.07, y / 0.07];
+const UV_GRILLE = (x, y, z) => [z / 0.17, (y - 0.595) / 0.0745]; // large diamonds: 17 cm wide, three rows across the grille height
+const UV_SLAT = (x, y, z) => [z / 0.18, y / 0.17]; // ~4 cm slats, dividers every 9 cm
 
 function buildBodyParts(patches) {
   const sideSign = (dir, s) => (dir ? [dir[0], dir[1], dir[2] * s] : null);
@@ -1487,12 +1487,12 @@ function buildBodyParts(patches) {
       g.add(new THREE.Mesh(toGeo(f(offsetPatch(patches.head, -0.026))), MAT.darkChrome));
       g.add(new THREE.Mesh(toGeo(f(boundaryWalls(union, 0.026))), MAT.darkChrome));
       if (patches.drl) { const d = new THREE.Mesh(toGeo(f(offsetPatch(patches.drl, -0.002))), MAT.drl); g.add(d); }
-      for (const [az, y] of [[0.72, 0.80]]) { // one projector per lamp, as drawn
+      for (const [az, y] of [[0.74, 0.785]]) { // one large chrome-ringed projector per lamp, as drawn
         const x = surfX(1, az, y), n = bodyNormal(x, y, az);
         const pj = new THREE.Group();
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.004, 10, 40), MAT.chrome);
-        const lensD = new THREE.Mesh(new THREE.CircleGeometry(0.022, 32), scanPatch(MAT.drl.clone()));
-        lensD.material.emissiveIntensity = 0.6; lensD.position.z = -0.004;
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.034, 0.005, 12, 48), MAT.chrome);
+        const lensD = new THREE.Mesh(new THREE.CircleGeometry(0.030, 40), scanPatch(MAT.drl.clone()));
+        lensD.material.emissiveIntensity = 0.12; lensD.position.z = -0.004;
         pj.add(ring, lensD);
         pj.position.set(x - n[0] * 0.014, y - n[1] * 0.014, (az - n[2] * 0.014) * s);
         pj.lookAt(pj.position.x + n[0], pj.position.y + n[1], pj.position.z + n[2] * s);
@@ -1695,9 +1695,14 @@ function buildDetails(mirrorTpl) {
   const plate = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.006), [MAT.matte, MAT.matte, MAT.matte, MAT.matte, MAT.plate, MAT.matte]);
   plate.rotation.y = Math.PI / 2; plate.position.set(px + 0.006, py, 0); plate.name = 'frontPlate';
   addPart(plate, 'bumperF', [0.75, 0.12, 0], 0.06);
-  const fy = 0.752, fbx = bodyX(1, fy, 0);
-  const front = sBadge(0.105, 0.008); front.rotation.y = Math.PI / 2; front.position.set(fbx + 0.002, fy, 0); front.name = 'suzukiBadgeFront';
+  const fy = 0.715, fbx = bodyX(1, fy, 0);
+  const front = sBadge(0.125, 0.010); front.rotation.y = Math.PI / 2; front.position.set(fbx + 0.004, fy, 0); front.name = 'suzukiBadgeFront';
   addPart(front, 'grille', [0.95, 0.12, 0], 0.06);
+  // thin chrome bar running across the grille between the lamps (reference front view)
+  { const by = 0.795, pts = [];
+    for (let i = -20; i <= 20; i++) { const az = (0.43 * i) / 20; pts.push(new THREE.Vector3(bodyX(1, by, Math.abs(az)) + 0.005, by, az)); }
+    const bar = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.0035, 8, false), MAT.chrome); bar.name = 'grilleBar';
+    addPart(bar, 'grille', [0.95, 0.12, 0], 0.06); }
   const ry = 1.016, rbx = bodyX(-1, ry, 0);
   const rear = sBadge(0.06, 0.006); rear.rotation.y = -Math.PI / 2; rear.position.set(rbx - 0.002, ry, 0); rear.name = 'suzukiBadgeRear';
   addPart(rear, 'boot', [-0.4, 0.95, 0], 0.18);
@@ -2277,8 +2282,8 @@ function applyFrameState(t = 0) {
   MAT.battery.opacity = so; MAT.motor.opacity = so * 0.92; MAT.volume.opacity = so * 0.055; MAT.volumeEdge.opacity = so * 0.9;
   for (const m of CAR.schematic) m.visible = so > 0.01 && (!STATE.isolated || !sel || m.userData.comp === sel);
   // lamps, flap, steering
-  MAT.drl.emissiveIntensity = 2.6 * rig.drl * intro.drl;
-  for (const m of CAR.lights.projectors || []) m.emissiveIntensity = 0.6 * intro.drl;
+  MAT.drl.emissiveIntensity = 3.4 * rig.drl * intro.drl; // bold LED line, reads on the light studio
+  for (const m of CAR.lights.projectors || []) m.emissiveIntensity = 0.12 * intro.drl; // dark projector lens inside the chrome ring
   MAT.tailLED.emissiveIntensity = 2.2 * rig.tail * (0.3 + 0.7 * intro.fade);
   MAT.tailLens.emissiveIntensity = 0.4 * rig.tail;
   if (CAR.flap) CAR.flap.rotation.y = -sstep(0, 1, flap) * 1.75;
