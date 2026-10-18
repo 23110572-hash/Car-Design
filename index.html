@@ -136,10 +136,9 @@ h2{font-family:var(--fh);font-weight:600;font-size:clamp(25px,2.5vw,35px);line-h
 /* hero */
 .hero .hold{align-items:flex-end;padding-bottom:13vh}
 .hero-copy{pointer-events:none;max-width:640px;opacity:0;transform:translateY(30px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
-html.ready .hero.on .hero-copy{opacity:1;transform:none;pointer-events:auto;transition:opacity 1.6s 1.2s var(--ease),transform 1.8s 1.2s var(--ease)}
-html:not(.ready) .hero .hero-copy{opacity:1;transform:none;pointer-events:auto;transition:opacity .8s var(--ease),transform .9s var(--ease)} /* no loader: show the Arrival copy at once */
+html.ready .hero.on .hero-copy{opacity:1;transform:none;pointer-events:auto;transition:opacity .6s var(--ease),transform .7s var(--ease)}
 html:not(.ready) #stage{opacity:0}
-#stage{transition:opacity 1.2s ease}
+#stage{transition:opacity .35s ease}
 html.ready.introduced .hero.on .hero-copy{transition-delay:0s,0s}
 .hero .eyebrow{margin-top:26px}
 .hero h1{font-family:var(--fh);font-weight:700;font-size:clamp(58px,8.4vw,128px);letter-spacing:.14em;line-height:.92;margin:6px 0 4px;background:linear-gradient(180deg,#fff 20%,#cabfab);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -250,7 +249,12 @@ html,body{background:#eceef0}
 .hint{background:rgba(255,255,255,.85)}
 #parts-pop{background:rgba(255,255,255,.97);box-shadow:0 14px 40px rgba(20,23,30,.14)}
 #toast{background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,23,30,.12)}
-#loader{background:radial-gradient(ellipse at 50% 42%,#ffffff 0%,#f4f5f7 55%,#e9ebef 100%)}
+#loader{background:#eceef0;transition:opacity .6s ease,visibility .6s}
+#loader .ld{gap:16px;width:min(320px,80vw)}
+#loader .ld-title{font-size:20px;letter-spacing:.5em;color:var(--ivory)}
+#loader .bar{height:3px;border-radius:3px}
+#loader .bar i{background:var(--navy);transition:transform .25s ease}
+#loader .ld-meta{font-size:11px}
 .bar{background:rgba(20,23,30,.1)}
 #fatal{background:rgba(244,245,247,.96)}
 .fatal-card{background:#fff}
@@ -305,6 +309,15 @@ noscript div{background:#f4f5f7;color:#14171e}
 <svg id="annot" aria-hidden="true"><g id="annot-g"></g></svg>
 <div id="labels" aria-hidden="true"></div>
 
+<!-- Loader: simple bar -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld">
+    <span class="plate lg"><img src="assets/maruti-suzuki-logo.svg" alt="Maruti Suzuki" onerror="this.parentNode.classList.add('missing')"><span class="miss">Logo missing: assets/maruti-suzuki-logo.svg</span></span>
+    <div class="ld-title">AAROH</div>
+    <div class="bar"><i id="loader-fill"></i></div>
+    <div class="ld-meta"><span id="loader-step">Loading the 3D model</span><span id="loader-pct">0%</span></div>
+  </div>
+</div>
 <div id="fatal" hidden role="alertdialog" aria-labelledby="fatal-title">
   <div class="fatal-card"><h2 id="fatal-title">Something went wrong</h2><p id="fatal-msg"></p><pre id="fatal-detail"></pre>
     <div class="row"><button class="btn primary" type="button" onclick="location.reload()">Reload</button></div></div>
@@ -534,11 +547,16 @@ if (location.hash) history.replaceState(null, '', location.pathname + location.s
 window.scrollTo(0, 0);
 
 /* ---------------- loader & errors ---------------- */
-// no loading screen: the hero shows straight away and the car fades in when it is built
+// simple loading bar; fades out once the car is on screen
 const Loader = {
-  el: null, v: 0,
-  set(v) { this.v = Math.max(this.v, clamp(v, 0, 1)); },
-  done() { this.v = 1; },
+  el: $('#loader'), fill: $('#loader-fill'), step: $('#loader-step'), pct: $('#loader-pct'), v: 0,
+  marks: [],
+  set(v, label) {
+    this.v = Math.max(this.v, clamp(v, 0, 1));
+    if (this.fill) { this.fill.style.transform = `scaleX(${this.v.toFixed(4)})`; this.pct.textContent = `${Math.round(this.v * 100)}%`; }
+    if (label) { if (this.step) this.step.textContent = label; if (this.marks[this.marks.length - 1]?.[0] !== label) this.marks.push([label, Math.round(performance.now())]); }
+  },
+  done() { this.set(1, 'Ready'); this.el?.classList.add('done'); setTimeout(() => this.el?.remove(), 900); },
 };
 class FatalError extends Error { constructor(title, message) { super(message); this.title = title; } }
 function showFatal(title, message, detail = '') {
@@ -1103,6 +1121,64 @@ function classify(x, y, az, T, SEAMS) {
   if (x < -1.45 && y < 0.95 && gBumpR(x, y) > 0) return 'bumperR';
   if (sdPoly(x, y, POLY.quarter) < 0) return 'quarter';
   return x > xB(y) ? 'doorF' : 'doorR';
+}
+
+/* ---------- pre-baked body mesh: the SDF build takes 10–40 s on a phone/laptop, so the
+   finished patches ship as assets/aaroh-body.bin and load in well under a second.
+   The file carries a hash of the shape code; if the code changes, the page falls back
+   to building at runtime until the file is re-baked (open the page with ?rebake). ---------- */
+const BODY_URL = 'assets/aaroh-body.bin', BODY_MAGIC = 0x42524141; // 'AARB'
+function bodyCodeHash() {
+  const src = [buildProfiles, halfWidth, planDist, bonnetRidge, frontRecess, rearRecess, sdfBody, buildUMap, buildPolys, cutList, seamList, classify, buildBodyGeometry, surfaceNets, CutMesh, xDF, xB, gBumpF, gBumpR].map(String).join('|')
+    + JSON.stringify([ARCH, PKG, XB1, XB2, XD1, XD2, W_SEAM, SILL_X0, SILL_X1]);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(16);
+}
+function encodeBody(patches) {
+  const mn = [Infinity, Infinity, 0], mx = [-Infinity, -Infinity, -Infinity];
+  for (const k in patches) { const P = patches[k].pos; for (let i = 0; i < P.length; i++) { const a = i % 3; if (P[i] < mn[a]) mn[a] = P[i]; if (P[i] > mx[a]) mx[a] = P[i]; } }
+  const sc = mn.map((m, a) => Math.max(mx[a] - m, 1e-6) / 65535);
+  const pad = (n) => (n + 3) & ~3, parts = [];
+  let off = 0;
+  for (const k in patches) {
+    const p = patches[k], nv = p.pos.length / 3, ni = p.idx.length, i32 = nv > 65535;
+    const po = off; off += pad(nv * 6); const no = off; off += pad(nv * 6); const io = off; off += pad(ni * (i32 ? 4 : 2));
+    parts.push({ k, nv, ni, i32, po, no, io });
+  }
+  const head = new TextEncoder().encode(JSON.stringify({ v: bodyCodeHash(), mn, sc, parts }));
+  const base = 8 + pad(head.length), buf = new ArrayBuffer(base + off), dv = new DataView(buf);
+  dv.setUint32(0, BODY_MAGIC, true); dv.setUint32(4, head.length, true); new Uint8Array(buf, 8, head.length).set(head);
+  for (const q of parts) {
+    const p = patches[q.k], qp = new Int16Array(buf, base + q.po, q.nv * 3), qn = new Int16Array(buf, base + q.no, q.nv * 3);
+    for (let i = 0; i < q.nv * 3; i++) { const a = i % 3; qp[i] = clamp(Math.round((p.pos[i] - mn[a]) / sc[a]), 0, 65535) - 32768; qn[i] = Math.round(clamp(p.nrm[i], -1, 1) * 32767); }
+    (q.i32 ? new Uint32Array(buf, base + q.io, q.ni) : new Uint16Array(buf, base + q.io, q.ni)).set(p.idx);
+  }
+  return buf;
+}
+function decodeBody(buf) {
+  const dv = new DataView(buf);
+  if (buf.byteLength < 8 || dv.getUint32(0, true) !== BODY_MAGIC) return null;
+  const hl = dv.getUint32(4, true), head = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, hl)));
+  if (head.v !== bodyCodeHash()) { console.warn('aaroh-body.bin is out of date for this shape code; building the body at runtime.'); return null; }
+  const base = 8 + ((hl + 3) & ~3), { mn, sc } = head, out = {};
+  for (const q of head.parts) {
+    const qp = new Int16Array(buf, base + q.po, q.nv * 3), qn = new Int16Array(buf, base + q.no, q.nv * 3);
+    const pos = new Array(q.nv * 3), nrm = new Array(q.nv * 3);
+    for (let i = 0; i < q.nv * 3; i += 3) {
+      pos[i] = mn[0] + (qp[i] + 32768) * sc[0]; pos[i + 1] = mn[1] + (qp[i + 1] + 32768) * sc[1]; pos[i + 2] = mn[2] + (qp[i + 2] + 32768) * sc[2];
+      const nx = qn[i], ny = qn[i + 1], nz = qn[i + 2], l = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      nrm[i] = nx / l; nrm[i + 1] = ny / l; nrm[i + 2] = nz / l;
+    }
+    out[q.k] = { pos, nrm, idx: Array.from(q.i32 ? new Uint32Array(buf, base + q.io, q.ni) : new Uint16Array(buf, base + q.io, q.ni)) };
+  }
+  return out;
+}
+// started at the very top of boot() so the download runs in parallel with the three.js imports
+let BAKED_BODY = null;
+function prefetchBody() {
+  if (QS.has('rebake')) return;
+  BAKED_BODY = fetch(BODY_URL).then((r) => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
 }
 
 async function buildBodyGeometry(onProg) {
@@ -1727,8 +1803,14 @@ async function buildCar(scene, report) {
   CAR.root = new THREE.Group(); CAR.root.name = 'AAROH'; scene.add(CAR.root);
   report(0.0, 'Reading the package: 4,250 × 1,780 × 1,550 mm');
   buildProfiles(); buildUMap(); buildPolys();
-  await yieldUI();
-  const patches = await buildBodyGeometry((p, label) => report(0.02 + p * 0.78, label));
+  let patches = null;
+  try { const buf = BAKED_BODY && (await BAKED_BODY); if (buf) patches = decodeBody(buf); } catch (e) { console.warn('Baked body unreadable, building at runtime.', e); patches = null; }
+  window.__aaroh.bodySource = patches ? 'baked' : 'built';
+  if (!patches) {
+    await yieldUI();
+    patches = await buildBodyGeometry((p, label) => report(0.02 + p * 0.78, label));
+    if (QS.has('rebake')) window.__aaroh.bodyBin = encodeBody(patches); // read by the bake script
+  }
   window.__aaroh.parts = Object.fromEntries(Object.entries(patches).map(([k, p]) => [k, p.idx.length / 3]));
   report(0.82, 'Fitting panels, glass and lamps');
   buildBodyParts(patches);
@@ -1967,15 +2049,16 @@ function buildStudio(scene, renderer) {
   STU.hemi = new THREE.HemisphereLight(0xffffff, 0xc9ccd2, 0.9); scene.add(STU.hemi);
   STU.key = new THREE.SpotLight(0xfff3e4, 110, 0, 0.62, 0.75, 2);
   STU.key.position.set(0.6, 7.6, 1.0); STU.key.target.position.set(0, 0.5, 0);
-  STU.key.castShadow = true; STU.key.shadow.mapSize.set(LOW ? 1024 : 2048, LOW ? 1024 : 2048); STU.key.shadow.bias = -0.0001; STU.key.shadow.normalBias = 0.025;
+  STU.key.castShadow = true; STU.key.shadow.mapSize.set(IS_TOUCH ? 1024 : 2048, IS_TOUCH ? 1024 : 2048); STU.key.shadow.bias = -0.0001; STU.key.shadow.normalBias = 0.025;
   STU.key.shadow.camera.near = 3; STU.key.shadow.camera.far = 12;
   scene.add(STU.key, STU.key.target);
   STU.rimW = new THREE.SpotLight(0xfff4ea, 160, 0, 0.55, 0.8, 2); STU.rimC = new THREE.SpotLight(0xeef3ff, 130, 0, 0.55, 0.8, 2); // neutral rims: no orange/blue pools on the floor
   for (const l of [STU.rimW, STU.rimC]) { l.target.position.set(0, 0.7, 0); scene.add(l, l.target); }
   STU.fill = new THREE.DirectionalLight(0xdfe6ff, 0.3); STU.fill.position.set(6, 3, 2.5); scene.add(STU.fill);
-  STU.moon = new THREE.DirectionalLight(0xeef1f6, 0.4); STU.moon.position.set(2, 10, -3); scene.add(STU.moon);
-  RectAreaLightUniformsLib.init();
-  STU.sweep = new THREE.RectAreaLight(0xffffff, 0, 5.2, 0.32); STU.sweep.position.set(0, 3.4, 0); STU.sweep.lookAt(0, 0, 0); scene.add(STU.sweep);
+  STU.moon = new THREE.DirectionalLight(0xeef1f6, 0.4); STU.moon.position.set(2, 10, -3); // kept for the API, not added: every extra light slows shader compiles at start-up
+  // the old RectAreaLight light-sweep made every lit shader much larger (slow to compile); a plain spot does the sweep now
+  STU.sweep = new THREE.SpotLight(0xffffff, 0, 0, 0.32, 0.9, 2); STU.sweep.position.set(-4, 3.4, 0); STU.sweep.target.position.set(0, 0.6, 0);
+  STU.sweep.intensity = 0; // not added to the scene (start-up shader cost); intensity updates are harmless no-ops
 }
 
 /* =====================================================================
@@ -1983,7 +2066,7 @@ function buildStudio(scene, renderer) {
    ===================================================================== */
 let renderer, scene, camera, composer, bloomPass, gradePass, controls;
 const canvas = $('#stage');
-let DPR = Math.min(devicePixelRatio || 1, LOW ? 1.25 : 1.75);
+let DPR = Math.min(devicePixelRatio || 1, IS_TOUCH ? 1.5 : 2); // sharper edges: the old 1.25 cap on LOW machines looked pixelated
 const VIEW = { w: innerWidth, h: innerHeight };
 function initRenderer() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false });
@@ -1999,7 +2082,7 @@ function initRenderer() {
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); showFatal('The 3D view was interrupted', 'The browser released the graphics context (often after the GPU was reset or the tab sat in the background). Reload to restore the scene.'); });
 }
 function initComposer() {
-  const rt = new THREE.WebGLRenderTarget(VIEW.w * DPR, VIEW.h * DPR, { type: THREE.HalfFloatType, samples: LOW ? 0 : 4 });
+  const rt = new THREE.WebGLRenderTarget(VIEW.w * DPR, VIEW.h * DPR, { type: THREE.HalfFloatType, samples: IS_TOUCH ? 2 : 4 }); // MSAA always on: smooth car edges
   composer = new EffectComposer(renderer, rt);
   composer.setPixelRatio(DPR); composer.setSize(VIEW.w, VIEW.h);
   composer.addPass(new RenderPass(scene, camera));
@@ -2195,7 +2278,7 @@ function applyFrameState(t = 0) {
   const rimK = (studio ? 1 : rig.rim) * f;
   STU.rimW.position.set(Math.cos(camAz + Math.PI + 0.7) * 6.2, 2.3, Math.sin(camAz + Math.PI + 0.7) * 6.2); STU.rimW.intensity = 120 * rimK;
   STU.rimC.position.set(Math.cos(camAz + Math.PI - 0.7) * 6.2, 2.5, Math.sin(camAz + Math.PI - 0.7) * 6.2); STU.rimC.intensity = 95 * rimK;
-  STU.sweep.intensity = studio ? 0 : 9 * rig.sweepI; STU.sweep.position.x = rig.sweepX;
+  STU.sweep.intensity = studio ? 0 : 60 * rig.sweepI; STU.sweep.position.x = rig.sweepX; STU.sweep.target.position.x = rig.sweepX * 0.6;
   if (STU.floorU) { STU.floorU.uGlow.value = studio ? 0.4 : rig.glow; STU.floorU.uReveal.value = intro.reveal; STU.floorU.uFogDensity.value = scene.fog.density; }
   else if (STU.floorMat) STU.floorMat.emissiveIntensity = 0.25 * intro.reveal * (0.6 + rig.glow);
   STU.jaaliMat.color.copy(_c1).multiplyScalar(1.2 * (studio ? 0.7 : rig.jaali) * (0.15 + 0.85 * f));
@@ -2522,12 +2605,14 @@ function restart() {
 function playIntro() {
   if (REDUCED) { Object.assign(intro, { fade: 1, dolly: 0, reveal: 1, drl: 1 }); return; }
   Object.assign(intro, { fade: 0, dolly: 3.2, reveal: 0, drl: 0 });
+  // quick reveal: the car is on screen almost at once, with a short settle-in
+  Object.assign(intro, { fade: 0.6, dolly: 0.8 });
   const t = gsap.timeline();
-  setTimeout(() => document.documentElement.classList.add('introduced'), 3200);
-  t.to(intro, { fade: 1, duration: 2.8, ease: 'power2.inOut' }, 0.15)
-    .to(intro, { dolly: 0, duration: 3.6, ease: 'power3.out' }, 0)
-    .to(intro, { reveal: 1, duration: 3.0, ease: 'power2.out' }, 0.7)
-    .to(intro, { drl: 1, duration: 0.3, ease: 'steps(3)' }, 1.6);
+  setTimeout(() => document.documentElement.classList.add('introduced'), 900);
+  t.to(intro, { fade: 1, duration: 0.5, ease: 'power2.out' }, 0)
+    .to(intro, { dolly: 0, duration: 1.1, ease: 'power3.out' }, 0)
+    .to(intro, { reveal: 1, duration: 1.0, ease: 'power2.out' }, 0)
+    .to(intro, { drl: 1, duration: 0.3, ease: 'steps(3)' }, 0.3);
 }
 
 /* =====================================================================
@@ -2545,10 +2630,11 @@ function frame(now) {
   perfS.acc += dt; perfS.n++;
   if (perfS.n >= 120) {
     const avg = perfS.acc / perfS.n; perfS.acc = 0; perfS.n = 0;
-    if (avg > 1 / 30 && DPR > 1 && perfS.drops < 3 && document.visibilityState === 'visible') { DPR = Math.max(1, DPR - 0.25); perfS.drops++; resize(); }
+    if (avg > 1 / 24 && DPR > 1.25 && perfS.drops < 2 && document.visibilityState === 'visible') { DPR = Math.max(1.25, DPR - 0.25); perfS.drops++; resize(); } // only for truly slow GPUs, never below 1.25
   }
 }
 async function boot() {
+  prefetchBody();
   try {
     Loader.set(0.01, 'Loading the 3D engine');
     await loadLibraries();
@@ -2557,8 +2643,8 @@ async function boot() {
     initTemps();
     if (!webgl2Available()) throw new FatalError('WebGL 2 is not available', 'This experience renders the car in real time and needs WebGL 2. Turn on hardware acceleration in the browser settings, or use a current version of Chrome, Edge, Firefox or Safari.');
     Loader.set(0.04, 'Loading typefaces');
-    await Promise.race([document.fonts.ready, wait(2500)]);
-    try { await Promise.race([Promise.all([document.fonts.load('600 40px Rajdhani', 'आरोह AAROH'), document.fonts.load('700 60px Manrope', 'MARUTI SUZUKI'), document.fonts.load('700 40px Sora', 'AAROH')]), wait(2500)]); } catch { /* fall back to system fonts */ }
+    // fonts are only needed for the plate/screen textures; never hold the car back for more than 1.2 s
+    try { await Promise.race([Promise.all([document.fonts.load('600 40px Rajdhani', 'आरोह AAROH'), document.fonts.load('700 60px Manrope', 'MARUTI SUZUKI'), document.fonts.load('700 40px Sora', 'AAROH')]), wait(1200)]); } catch { /* fall back to system fonts */ }
     initRenderer();
     Loader.set(0.07, 'Lighting the studio');
     makeCarTextures(); makeMaterials();
@@ -2568,14 +2654,25 @@ async function boot() {
     await buildCar(scene, (p, label) => Loader.set(0.09 + p * 0.8, label));
     Loader.set(0.9, 'Compiling shaders');
     setupControls(); setupUI(); buildAnnotations(); buildTimeline();
+    Loader.set(0.92, 'UI ready');
     await yieldUI();
     updateCamera(); applyFrameState(0);
-    renderer.compile(scene, camera);
+    // Compile against the composer's render target: that is where the scene is actually drawn
+    // (no tone mapping, linear output), so each material compiles once, in parallel, instead of
+    // also compiling an unused on-screen variant. Shader compiles are the slowest part of start-up on Windows.
+    Loader.set(0.9, 'Preparing materials');
+    const creep = setInterval(() => Loader.set(Loader.v + (0.95 - Loader.v) * 0.06), 150); // keep the bar moving during the compile
+    renderer.setRenderTarget(composer.readBuffer);
+    try { await renderer.compileAsync(scene, camera); } catch { renderer.compile(scene, camera); }
+    renderer.setRenderTarget(null);
+    clearInterval(creep);
+    Loader.set(0.95, 'Shaders compiled');
     composer.render(0.016);
     Loader.set(0.98, 'Final checks');
     await yieldUI();
     READY = true;
-    Object.assign(window.__aaroh, { ready: true, scrollToScene, enterStudio, exitStudio, goPreset, select, setIsolate, studioAction, restart, rig, STUDIO, orbit: (v) => tweenOrbit(v, 0.01), info: () => ({ triangles: renderer.info.render.triangles, calls: renderer.info.render.calls, dpr: DPR }) });
+    Loader.set(1, 'Ready');
+    Object.assign(window.__aaroh, { marks: Loader.marks, ready: true, scrollToScene, enterStudio, exitStudio, goPreset, select, setIsolate, studioAction, restart, rig, STUDIO, orbit: (v) => tweenOrbit(v, 0.01), info: () => ({ triangles: renderer.info.render.triangles, calls: renderer.info.render.calls, dpr: DPR }) });
     window.scrollTo(0, 0); // land on Arrival even if the browser scrolled during the build
     document.documentElement.classList.add('ready');
     Loader.done();
