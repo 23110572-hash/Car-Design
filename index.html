@@ -832,7 +832,7 @@ function buildPolys() {
       onto the exact iso-surface with analytic-gradient normals.
    ===================================================================== */
 const CORNER_EDGES = new Int8Array([0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3, 4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7]);
-async function surfaceNets(fn, b, h, onProg, coarse = 4) {
+async function surfaceNets(fn, b, h, onProg, coarse = 4, proj = 1) {
   const x0 = b[0], y0 = b[1], z0 = b[2];
   const nx = Math.round((b[3] - x0) / h) + 1, ny = Math.round((b[4] - y0) / h) + 1, nz = Math.round((b[5] - z0) / h) + 1;
   const sY = nx, sZ = nx * ny, F = new Float32Array(nx * ny * nz);
@@ -891,12 +891,12 @@ async function surfaceNets(fn, b, h, onProg, coarse = 4) {
   const nv = P.length / 3, NRM = new Array(nv * 3), e = 0.0007, lim = h * 0.8;
   for (let v = 0; v < nv; v++) {
     let x = P[3 * v], y = P[3 * v + 1], z = P[3 * v + 2], gx = 0, gy = 1, gz = 0;
-    for (let it = 0; it < 2; it++) {
+    for (let it = 0; it <= proj; it++) { // proj Newton steps onto the exact surface, then the normal
       const f0 = fn(x, y, z);
       gx = (fn(x + e, y, z) - fn(x - e, y, z)) / (2 * e);
       gy = (fn(x, y + e, z) - fn(x, y - e, z)) / (2 * e);
       gz = (fn(x, y, z + e) - fn(x, y, z - e)) / (2 * e);
-      if (it === 1) break;
+      if (it === proj) break;
       const g2 = gx * gx + gy * gy + gz * gz || 1e-9;
       let qx = (f0 * gx) / g2, qy = (f0 * gy) / g2, qz = (f0 * gz) / g2;
       const ql = Math.sqrt(qx * qx + qy * qy + qz * qz);
@@ -961,7 +961,8 @@ class CutMesh {
 }
 /* ---------- patch helpers ---------- */
 const emptyPatch = () => ({ pos: [], nrm: [], idx: [] });
-function mergePatches(list) { const out = emptyPatch(); for (const p of list) { if (!p) continue; const o = out.pos.length / 3; out.pos.push(...p.pos); out.nrm.push(...p.nrm); for (const i of p.idx) out.idx.push(i + o); } return out; }
+// plain loops (no push(...spread)): the finer baked mesh has patches larger than Safari's 65,536-argument limit
+function mergePatches(list) { const out = emptyPatch(); for (const p of list) { if (!p) continue; const o = out.pos.length / 3; for (const v of p.pos) out.pos.push(v); for (const v of p.nrm) out.nrm.push(v); for (const i of p.idx) out.idx.push(i + o); } return out; }
 function mirrorZ(p) {
   const pos = p.pos.slice(), nrm = p.nrm.slice(), idx = p.idx.slice();
   for (let i = 2; i < pos.length; i += 3) { pos[i] = -pos[i]; nrm[i] = -nrm[i]; }
@@ -1182,8 +1183,10 @@ function prefetchBody() {
 }
 
 async function buildBodyGeometry(onProg) {
-  const h = LOW ? 0.021 : 0.017;
-  const raw = await surfaceNets((x, y, z) => sdfBody(x, y, z), [-2.18, 0.14, -2 * h, 2.18, 1.59, 0.96], h, (p) => onProg(p * 0.78, 'Sculpting the body surface'), 4);
+  // the shipped (baked) mesh uses a fine 12 mm grid with 3 projection steps for a smooth surface;
+  // the runtime fallback stays coarser so it still finishes in reasonable time
+  const bake = QS.has('rebake'), h = bake ? 0.012 : LOW ? 0.021 : 0.017;
+  const raw = await surfaceNets((x, y, z) => sdfBody(x, y, z), [-2.18, 0.14, -2 * h, 2.18, 1.59, 0.96], h, (p) => onProg(p * 0.78, 'Sculpting the body surface'), 4, bake ? 3 : 1);
   const M = new CutMesh(raw.pos, raw.nrm, raw.idx);
   // winding sanity check against the field gradient
   let agree = 0;
@@ -1227,12 +1230,12 @@ function canvasTex(w, h, draw, { color = true, repeat = false, aniso = 4 } = {})
   draw(c.getContext('2d'), w, h);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
-  t.anisotropy = aniso;
+  t.anisotropy = Math.max(aniso, renderer ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 0); // full anisotropic filtering: crisp textures at grazing angles
   if (repeat) t.wrapS = t.wrapT = THREE.RepeatWrapping;
   return t;
 }
 function makeCarTextures() {
-  TEX.hex = canvasTex(256, 222, (g, w, h) => {
+  TEX.hex = canvasTex(512, 443, (g, w, h) => { // 2× resolution grille mesh
     g.fillStyle = '#030304'; g.fillRect(0, 0, w, h);
     const r = w / (4 * Math.sqrt(3)), dx = Math.sqrt(3) * r, dy = 1.5 * r;
     for (let row = -1; row <= 5; row++) for (let col = -1; col <= 5; col++) {
@@ -1241,7 +1244,7 @@ function makeCarTextures() {
       for (let k = 0; k < 6; k++) { const a = (60 * k - 30) * DEG; g.lineTo(cx + Math.cos(a) * r * 0.86, cy + Math.sin(a) * r * 0.86); }
       g.closePath();
       const gr = g.createRadialGradient(cx, cy - r * 0.3, 1, cx, cy, r); gr.addColorStop(0, '#000'); gr.addColorStop(1, '#16181b');
-      g.fillStyle = gr; g.fill(); g.lineWidth = 3; g.strokeStyle = '#3a3e44'; g.stroke();
+      g.fillStyle = gr; g.fill(); g.lineWidth = 3 * (w / 256); g.strokeStyle = '#3a3e44'; g.stroke();
     }
   }, { repeat: true });
   TEX.slat = canvasTex(256, 256, (g, w, h) => {
@@ -1314,8 +1317,9 @@ const MAT = {};
 function makeMaterials() {
   const P = (o) => scanPatch(new THREE.MeshPhysicalMaterial(o));
   const S = (o) => scanPatch(new THREE.MeshStandardMaterial(o));
-  MAT.paint = P({ color: 0xd9dadb, metalness: 0.42, roughness: 0.34, clearcoat: 1, clearcoatRoughness: 0.035 });
-  MAT.gloss = P({ color: 0x060709, metalness: 0.15, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.04 });
+  // clearcoat slightly less mirror-like: removes sparkling, stair-stepped highlights on the body
+  MAT.paint = P({ color: 0xd9dadb, metalness: 0.42, roughness: 0.34, clearcoat: 1, clearcoatRoughness: 0.065 });
+  MAT.gloss = P({ color: 0x060709, metalness: 0.15, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.065 });
   MAT.matte = S({ color: 0x0f1012, metalness: 0, roughness: 0.82 });
   MAT.seam = S({ color: 0x020203, roughness: 1 });
   MAT.inner = S({ color: 0x17181c, roughness: 0.92, side: THREE.BackSide });
@@ -2066,7 +2070,8 @@ function buildStudio(scene, renderer) {
    ===================================================================== */
 let renderer, scene, camera, composer, bloomPass, gradePass, controls;
 const canvas = $('#stage');
-let DPR = Math.min(devicePixelRatio || 1, IS_TOUCH ? 1.5 : 2); // sharper edges: the old 1.25 cap on LOW machines looked pixelated
+// desktop renders at least 1.5× (supersampled, then scaled down by the browser) for smooth edges even on 1080p screens
+let DPR = IS_TOUCH ? Math.min(devicePixelRatio || 1, 1.5) : clamp(devicePixelRatio || 1, 1.5, 2);
 const VIEW = { w: innerWidth, h: innerHeight };
 function initRenderer() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false });
