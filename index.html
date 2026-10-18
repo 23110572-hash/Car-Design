@@ -1,0 +1,2594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AAROH · Maruti Suzuki · India's 2035 electric sedan in 3D</title>
+<meta name="description" content="Scroll-driven 3D presentation of AAROH, a 5-seat, 4,250 mm electric sedan concept for India 2035.">
+<meta name="theme-color" content="#f4f5f7">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Sora:wght@300;400;600;700&display=swap">
+<style>
+:root{
+  /* white studio theme: --ivory is now the main (dark) ink colour */
+  --mid:#eceef0;--mid2:#ffffff;--graph:#262a32;
+  --ivory:#14171e;--iv2:rgba(20,23,30,.80);--iv3:rgba(20,23,30,.62);--iv4:rgba(20,23,30,.42);
+  --silver:#c9cdd4;--saffron:#f2992e;--saffron-ink:#a85a0c;--copper:#a8642e;--bronze:#9a6a40;--navy:#1f3f8f;
+  --line:rgba(20,23,30,.12);--line2:rgba(20,23,30,.22);
+  --card:rgba(255,255,255,.86);--card2:rgba(255,255,255,.94);
+  --navh:68px;
+  --fh:"Sora","Segoe UI",system-ui,-apple-system,sans-serif;
+  --fb:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+  --ft:"Rajdhani","Sora",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box}
+html{background:var(--mid);scrollbar-gutter:stable;-webkit-text-size-adjust:100%}
+html.lock{overflow:hidden}
+body{margin:0;background:var(--mid);color:var(--ivory);font-family:var(--fb);font-size:16px;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--saffron);outline-offset:3px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- 3D layers ---------- */
+#stage{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;display:block;z-index:0;pointer-events:none;touch-action:pan-y;outline:none}
+html.studio #stage{pointer-events:auto;cursor:grab;touch-action:none}
+html.studio #stage:active{cursor:grabbing}
+html.hovering #stage, html.hovering body{cursor:pointer}
+#annot{position:fixed;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+#annot line,#annot polyline{stroke:var(--ivory);stroke-width:1;fill:none;vector-effect:non-scaling-stroke}
+#annot .ext{stroke:rgba(243,236,223,.38);stroke-dasharray:3 4}
+#annot .lead{stroke:rgba(242,153,46,.85)}
+#annot circle{fill:var(--saffron);stroke:none}
+#annot circle.ring{fill:none;stroke:var(--saffron);stroke-width:1}
+#labels{position:fixed;left:0;top:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:hidden}
+.lab{position:absolute;left:0;top:0;white-space:nowrap;font-family:var(--ft);letter-spacing:.05em;color:var(--ivory);opacity:0;will-change:transform,opacity}
+.lab b{display:block;font-weight:700;font-size:15px;line-height:1.1}
+.lab small{display:block;font-weight:600;font-size:11px;color:var(--iv3);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.lab.dim{text-align:center;padding:2px 8px;background:rgba(6,9,20,.72)}
+.lab.dim b{font-size:16px;color:#fff}
+.lab.call{padding:6px 10px 6px 11px;border-left:2px solid var(--saffron);background:rgba(6,9,20,.66);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+/* ---------- navigation ---------- */
+.nav{position:fixed;left:0;right:0;top:0;height:var(--navh);z-index:30;display:flex;align-items:center;gap:18px;padding:0 clamp(14px,3vw,36px);background:linear-gradient(180deg,rgba(4,6,14,.92),rgba(4,6,14,.55) 62%,rgba(4,6,14,0))}
+.plate{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:6px;padding:7px 12px;box-shadow:0 8px 30px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.06);text-decoration:none;flex:none}
+.plate img{display:block;height:17px;width:auto}
+.plate.lg{padding:12px 18px;border-radius:8px}
+.plate.lg img{height:26px}
+.plate .miss{display:none;font:700 11px/1.3 var(--fb);color:#8a1010;max-width:240px;text-align:left}
+.plate.missing img{display:none}
+.plate.missing .miss{display:block}
+.nav-name{display:flex;gap:12px;align-items:center;font-family:var(--ft);font-weight:600;letter-spacing:.3em;font-size:14px;color:var(--iv2)}
+.nav-name i{width:1px;height:18px;background:var(--line2)}
+.nav-name span[lang]{letter-spacing:.12em;color:var(--copper)}
+.nav-links{display:flex;gap:2px;margin-left:auto}
+.nav-links a{font-family:var(--ft);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--iv3);padding:8px 9px;border-radius:2px;transition:color .3s,box-shadow .3s}
+.nav-links a:hover,.nav-links a.on{color:var(--ivory)}
+.nav-links a.on{box-shadow:inset 0 -2px 0 var(--saffron)}
+.nav-tools{display:flex;gap:8px;margin-left:12px}
+.tbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line2);background:rgba(10,14,26,.6);border-radius:3px;cursor:pointer;font-family:var(--ft);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ivory);transition:background .25s,border-color .25s;white-space:nowrap}
+.tbtn:hover{border-color:var(--saffron);background:rgba(242,153,46,.12)}
+.tbtn svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tbtn.icon{width:38px;padding:0}
+.tbtn[aria-pressed="true"]{border-color:var(--saffron);background:rgba(242,153,46,.2)}
+.tbtn:disabled{opacity:.38;cursor:not-allowed}
+.progress{position:fixed;left:0;right:0;top:0;height:2px;z-index:31;background:rgba(243,236,223,.06)}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--copper),var(--saffron));transform-origin:0 50%;transform:scaleX(0)}
+.rail{position:fixed;right:clamp(10px,1.6vw,26px);top:50%;transform:translateY(-50%);z-index:25;display:flex;flex-direction:column;gap:14px;transition:opacity .4s}
+.rail button{position:relative;width:14px;height:14px;border:0;background:none;padding:0;cursor:pointer}
+.rail button::before{content:"";position:absolute;inset:3px;transform:rotate(45deg);border:1px solid var(--iv3);transition:all .3s}
+.rail button.on::before{background:var(--saffron);border-color:var(--saffron);inset:2px}
+.rail button span{position:absolute;right:24px;top:50%;transform:translateY(-50%);font:600 11px var(--ft);letter-spacing:.16em;text-transform:uppercase;color:var(--iv2);white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none}
+.rail button:hover span,.rail button:focus-visible span,.rail button.on span{opacity:1}
+.rail button.on span{color:var(--saffron)}
+
+/* ---------- story ---------- */
+#story{position:relative;z-index:5;transition:opacity .5s}
+.scene{position:relative;height:calc(var(--vh,160) * 1vh)}
+.hold{position:fixed;left:0;right:0;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:calc(var(--navh) + 2vh) clamp(18px,5.5vw,92px) 6vh;pointer-events:none}
+.hold.right{justify-content:flex-end}
+.hold.top{align-items:flex-start}
+.panel{pointer-events:none;position:relative;width:min(440px,100%);padding:26px 28px 24px;background:linear-gradient(160deg,rgba(9,14,28,.82),rgba(7,9,16,.66));border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.panel.wide{width:min(520px,100%)}
+.scene.on .panel{opacity:1;transform:none;pointer-events:auto}
+.scene:not(.on) .panel{transition-duration:.35s,.45s}
+.panel::before{content:"";position:absolute;inset:-1px;pointer-events:none;background:
+  linear-gradient(var(--copper),var(--copper)) top left/18px 1px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) top left/1px 18px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) top right/18px 1px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) top right/1px 18px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) bottom left/18px 1px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) bottom left/1px 18px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) bottom right/18px 1px no-repeat,
+  linear-gradient(var(--copper),var(--copper)) bottom right/1px 18px no-repeat}
+.panel::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23f3ecdf' stroke-width='.7'%3E%3Cpath d='M22 5l4.6 12.4L39 22l-12.4 4.6L22 39l-4.6-12.4L5 22l12.4-4.6z'/%3E%3Crect x='13' y='13' width='18' height='18' transform='rotate(45 22 22)'/%3E%3Ccircle cx='22' cy='22' r='2.6'/%3E%3Cpath d='M0 0l5 5M44 0l-5 5M0 44l5-5M44 44l-5-5'/%3E%3C/g%3E%3C/svg%3E") 0 0/44px 44px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);mask-image:linear-gradient(180deg,#000,transparent 75%)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 14px;font:600 12.5px/1 var(--ft);letter-spacing:.26em;text-transform:uppercase;color:var(--saffron)}
+.eyebrow::before{content:"";width:8px;height:8px;transform:rotate(45deg);border:1px solid var(--saffron);flex:none}
+h2{font-family:var(--fh);font-weight:600;font-size:clamp(25px,2.5vw,35px);line-height:1.13;letter-spacing:-.01em;margin:0 0 14px}
+.panel p{margin:0 0 14px;color:var(--iv2);font-size:15.5px}
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:18px 0 4px}
+.spec{background:rgba(7,10,20,.9);padding:11px 13px}
+.spec b{display:block;font:700 23px/1.05 var(--ft);letter-spacing:.02em;color:var(--ivory)}
+.spec span{display:block;font:500 12px/1.35 var(--fb);color:var(--iv3);margin-top:4px}
+.panel .note{font-size:12.5px;color:var(--iv3);margin:12px 0 0}
+.panel .note b{color:var(--iv2);font-weight:600}
+.orn{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:var(--copper)}
+.orn::before,.orn::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--line2),transparent)}
+.orn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1}
+.stats{list-style:none;margin:16px 0 6px;padding:0;display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.stats li{background:rgba(7,10,20,.9);padding:11px 14px;display:grid;grid-template-columns:96px 1fr;align-items:center;gap:12px;transition:background .4s,color .4s;color:var(--iv3)}
+.stats li b{font:700 26px/1 var(--ft);color:var(--iv2);transition:color .4s}
+.stats li.on{background:rgba(242,153,46,.12);color:var(--ivory)}
+.stats li.on b{color:var(--saffron)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+.chip{border:1px solid var(--line2);background:rgba(10,14,26,.6);border-radius:30px;padding:6px 12px;font:600 12.5px/1.2 var(--ft);letter-spacing:.07em;color:var(--iv2);cursor:pointer;transition:all .25s}
+.chip:hover,.chip[aria-pressed="true"]{border-color:var(--saffron);color:#fff;background:rgba(242,153,46,.16)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 20px;border-radius:3px;font:600 13.5px var(--ft);letter-spacing:.17em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:1px solid var(--line2);background:rgba(10,14,26,.55);transition:all .3s;color:var(--ivory)}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7}
+.btn:hover{border-color:var(--saffron);background:rgba(242,153,46,.12)}
+.btn.primary{background:var(--ivory);color:#0b0d12;border-color:var(--ivory)}
+.btn.primary:hover{background:#fff;border-color:#fff}
+
+/* hero */
+.hero .hold{align-items:flex-end;padding-bottom:13vh}
+.hero-copy{pointer-events:none;max-width:640px;opacity:0;transform:translateY(30px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+html.ready .hero.on .hero-copy{opacity:1;transform:none;pointer-events:auto;transition:opacity 1.6s 1.2s var(--ease),transform 1.8s 1.2s var(--ease)}
+html:not(.ready) .hero .hero-copy{opacity:1;transform:none;pointer-events:auto;transition:opacity .8s var(--ease),transform .9s var(--ease)} /* no loader: show the Arrival copy at once */
+html:not(.ready) #stage{opacity:0}
+#stage{transition:opacity 1.2s ease}
+html.ready.introduced .hero.on .hero-copy{transition-delay:0s,0s}
+.hero .eyebrow{margin-top:26px}
+.hero h1{font-family:var(--fh);font-weight:700;font-size:clamp(58px,8.4vw,128px);letter-spacing:.14em;line-height:.92;margin:6px 0 4px;background:linear-gradient(180deg,#fff 20%,#cabfab);-webkit-background-clip:text;background-clip:text;color:transparent}
+.deva{display:block;font-family:var(--ft);font-weight:600;font-size:clamp(20px,2vw,28px);letter-spacing:.32em;color:var(--copper);margin:6px 0 0 .25em}
+.tagline{font-family:var(--fh);font-weight:300;font-size:clamp(20px,2.1vw,29px);margin:18px 0 8px;color:var(--ivory)}
+.sub{color:var(--iv2);font-size:15.5px;margin:0 0 24px}
+.cue{position:fixed;left:50%;bottom:3.5vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font:600 11px var(--ft);letter-spacing:.32em;text-transform:uppercase;color:var(--iv3);pointer-events:none;opacity:0;transition:opacity .5s}
+html.ready .hero.on .cue{opacity:1;transition:opacity 1s 2.4s}
+.cue i{width:1px;height:46px;background:linear-gradient(var(--saffron),transparent);animation:cue 2.2s infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* reveal */
+.reveal .panel{width:min(560px,100%)}
+.reveal .plate{margin-bottom:18px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:16px 0 6px}
+.facts div{background:rgba(7,10,20,.9);padding:10px 13px;font-size:13px;color:var(--iv3)}
+.facts b{display:block;font:700 17px/1.2 var(--ft);color:var(--ivory);letter-spacing:.03em}
+.credit{font-size:12px;color:var(--iv3);margin-top:14px;line-height:1.5}
+
+/* ---------- inspector ---------- */
+#inspector{position:fixed;right:clamp(14px,3vw,48px);top:calc(var(--navh) + 18px);z-index:41;width:min(360px,calc(100vw - 28px));max-height:calc(100vh - var(--navh) - 130px);overflow:auto;padding:20px 22px 18px;background:linear-gradient(160deg,rgba(10,15,30,.95),rgba(8,10,18,.92));border:1px solid var(--line2);box-shadow:0 22px 60px rgba(0,0,0,.45);transform:translateY(-10px);opacity:0;pointer-events:none;transition:opacity .4s var(--ease),transform .5s var(--ease)}
+#inspector.on{opacity:1;transform:none;pointer-events:auto}
+#inspector h3{font:600 21px/1.2 var(--fh);margin:4px 0 8px}
+#inspector .tag{font:600 11.5px var(--ft);letter-spacing:.22em;text-transform:uppercase;color:var(--saffron)}
+#inspector p{font-size:14px;color:var(--iv2);margin:0 0 12px}
+#inspector dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;font-size:13px}
+#inspector dt{color:var(--iv3)}
+#inspector dd{margin:0;color:var(--ivory);font-weight:600}
+#inspector .src{font-size:11.5px;color:var(--iv3);border-top:1px solid var(--line);padding-top:10px;margin:0 0 12px}
+#inspector .x{position:absolute;right:10px;top:10px;width:30px;height:30px;border:0;background:none;cursor:pointer;color:var(--iv3);font-size:20px;line-height:1}
+#inspector .x:hover{color:#fff}
+#inspector .row{margin-top:4px}
+#inspector .btn{height:38px;padding:0 14px;font-size:12px}
+
+/* ---------- studio ---------- */
+#studio{position:fixed;left:50%;bottom:clamp(12px,3vh,26px);transform:translate(-50%,24px);z-index:40;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:8px;background:rgba(7,10,20,.86);border:1px solid var(--line2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .45s var(--ease),transform .5s var(--ease);max-width:calc(100vw - 20px)}
+html.studio #studio{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+html.studio #story,html.studio .rail,html.studio #labels,html.studio #annot{opacity:0;pointer-events:none}
+html.studio #story *{pointer-events:none!important}
+.grp{display:flex;gap:4px;padding:0 6px;border-left:1px solid var(--line);align-items:center}
+.grp:first-child{border-left:0}
+.grp-t{font:600 10.5px var(--ft);letter-spacing:.2em;text-transform:uppercase;color:var(--iv4);margin-right:4px}
+#studio .tbtn{height:36px;padding:0 11px;font-size:12px}
+#studio .tbtn.icon{width:36px;padding:0}
+.hint{position:fixed;left:50%;top:calc(var(--navh) + 6px);transform:translateX(-50%);z-index:39;font:600 11.5px var(--ft);letter-spacing:.18em;text-transform:uppercase;color:var(--iv3);background:rgba(7,10,20,.7);padding:7px 14px;border:1px solid var(--line);opacity:0;pointer-events:none;transition:opacity .5s;white-space:nowrap}
+html.studio .hint{opacity:1}
+#parts-pop{position:fixed;left:50%;bottom:calc(clamp(12px,3vh,26px) + 64px);transform:translateX(-50%);z-index:42;width:min(560px,calc(100vw - 24px));padding:14px;background:rgba(7,10,20,.95);border:1px solid var(--line2);display:none}
+#parts-pop.on{display:block}
+#parts-pop .chips{margin:0}
+#toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,10px);z-index:60;background:rgba(7,10,20,.92);border:1px solid var(--line2);padding:10px 16px;font-size:13.5px;color:var(--iv2);opacity:0;pointer-events:none;transition:all .4s;max-width:calc(100vw - 30px);text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- loader / errors ---------- */
+#loader{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,#0d1530 0%,#070a16 55%,#04050b 100%);transition:opacity 1.3s ease,visibility 1.3s}
+#loader.done{opacity:0;visibility:hidden}
+.ld{display:flex;flex-direction:column;align-items:center;gap:20px;width:min(430px,86vw);text-align:center}
+.mandala{width:160px;height:160px;color:var(--copper)}
+.mandala .r1{animation:spin 28s linear infinite;transform-origin:100px 100px}
+.mandala .r2{animation:spin 40s linear infinite reverse;transform-origin:100px 100px}
+.mandala .pt{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 3s ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.ld-title{font:700 26px var(--fh);letter-spacing:.44em;margin-right:-.44em}
+.ld-title span{display:block;font:600 15px var(--ft);letter-spacing:.32em;color:var(--copper);margin-top:6px}
+.bar{width:100%;height:2px;background:rgba(243,236,223,.1);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--copper),var(--saffron));transform-origin:0 50%;transform:scaleX(0);transition:transform .3s ease}
+.ld-meta{display:flex;justify-content:space-between;width:100%;font:600 12px var(--ft);letter-spacing:.16em;text-transform:uppercase;color:var(--iv3);gap:12px}
+.ld-meta span:first-child{text-align:left}
+#loader.err .bar i{background:#c0392b}
+#fatal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(4,6,12,.95);padding:20px}
+#fatal[hidden]{display:none}
+.fatal-card{max-width:580px;border:1px solid var(--line2);padding:28px 30px;background:#0a0f1d}
+.fatal-card h2{font-size:24px}
+.fatal-card p{color:var(--iv2)}
+.fatal-card pre{white-space:pre-wrap;font-size:12px;color:var(--iv3);max-height:180px;overflow:auto;background:#060913;padding:10px;border:1px solid var(--line)}
+noscript div{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:#05070d;color:#f3ecdf;font:16px system-ui;padding:24px;text-align:center}
+
+/* ---------- white studio overrides (dark-on-light UI) ---------- */
+#annot .ext{stroke:rgba(20,23,30,.38)}
+.lab.dim{background:rgba(255,255,255,.85)}
+.lab.dim b{color:var(--ivory)}
+.lab.call{background:rgba(255,255,255,.82);box-shadow:0 6px 20px rgba(20,23,30,.08)}
+.nav{background:linear-gradient(180deg,rgba(236,238,240,.95),rgba(236,238,240,.6) 62%,rgba(236,238,240,0))}
+html,body{background:#eceef0}
+.plate{box-shadow:0 6px 18px rgba(20,23,30,.10),inset 0 0 0 1px rgba(20,23,30,.08)}
+.nav-name span[lang],.deva,.ld-title span{color:var(--copper)}
+.tbtn{background:rgba(255,255,255,.8)}
+.tbtn:hover{background:rgba(242,153,46,.14)}
+.progress{background:rgba(20,23,30,.06)}
+.panel{background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(250,250,252,.78));box-shadow:0 18px 50px rgba(20,23,30,.10)}
+.panel::after{display:none}
+.eyebrow{color:var(--saffron-ink)}
+.rail button.on span{color:var(--saffron-ink)}
+.spec,.stats li,.facts div{background:var(--card2)}
+.stats li.on{background:rgba(242,153,46,.14)}
+.stats li.on b{color:var(--saffron-ink)}
+.chip{background:rgba(255,255,255,.8)}
+.chip:hover,.chip[aria-pressed="true"]{color:var(--ivory);background:rgba(242,153,46,.18)}
+.btn{background:rgba(255,255,255,.75)}
+.btn:hover{background:rgba(242,153,46,.14)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover{background:#163070;border-color:#163070}
+.hero h1{background:linear-gradient(180deg,#1f3f8f 10%,#14171e);-webkit-background-clip:text;background-clip:text;color:transparent}
+#inspector{background:linear-gradient(160deg,rgba(255,255,255,.97),rgba(248,249,251,.95));box-shadow:0 22px 60px rgba(20,23,30,.16)}
+#inspector .tag{color:var(--saffron-ink)}
+#inspector .x:hover{color:var(--ivory)}
+#studio{background:rgba(255,255,255,.9);box-shadow:0 14px 40px rgba(20,23,30,.12)}
+.hint{background:rgba(255,255,255,.85)}
+#parts-pop{background:rgba(255,255,255,.97);box-shadow:0 14px 40px rgba(20,23,30,.14)}
+#toast{background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,23,30,.12)}
+#loader{background:radial-gradient(ellipse at 50% 42%,#ffffff 0%,#f4f5f7 55%,#e9ebef 100%)}
+.bar{background:rgba(20,23,30,.1)}
+#fatal{background:rgba(244,245,247,.96)}
+.fatal-card{background:#fff}
+.fatal-card pre{background:#f4f5f7}
+noscript div{background:#f4f5f7;color:#14171e}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){.nav-links{display:none}}
+@media (max-width:760px){
+  :root{--navh:58px}
+  .nav{gap:10px}
+  .plate img{height:13px}
+  .plate{padding:6px 9px}
+  .plate.lg img{height:19px}
+  .nav-name{display:none}
+  .nav-tools{margin-left:auto;gap:6px}
+  .tbtn .t{display:none}
+  .tbtn{padding:0 10px;height:36px}
+  .hold,.hold.right,.hold.top{align-items:flex-end;justify-content:center;padding:0 12px 14px}
+  .panel{width:100%;padding:18px 18px 16px;max-height:50vh;max-height:50svh;overflow:auto}
+  .panel p{font-size:14.5px}
+  h2{font-size:23px}
+  .spec b{font-size:19px}
+  .rail{display:none}
+  .hero .hold{padding-bottom:9vh}
+  .hero h1{letter-spacing:.08em}
+  .stats li{grid-template-columns:78px 1fr}
+  .stats li b{font-size:21px}
+  #inspector{left:12px;right:12px;width:auto;top:auto;bottom:86px;max-height:46vh}
+  .lab.call small{display:none}
+  .lab.call b{font-size:13px}
+  .lab.dim b{font-size:13px}
+  .lab.dim small{font-size:9.5px}
+  .hint{display:none}
+  .facts b{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<noscript><div>This experience needs JavaScript and WebGL 2 to render the 3D model.</div></noscript>
+
+<canvas id="stage" tabindex="-1" aria-label="Interactive 3D model of the AAROH electric sedan"></canvas>
+<svg id="annot" aria-hidden="true"><g id="annot-g"></g></svg>
+<div id="labels" aria-hidden="true"></div>
+
+<div id="fatal" hidden role="alertdialog" aria-labelledby="fatal-title">
+  <div class="fatal-card"><h2 id="fatal-title">Something went wrong</h2><p id="fatal-msg"></p><pre id="fatal-detail"></pre>
+    <div class="row"><button class="btn primary" type="button" onclick="location.reload()">Reload</button></div></div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+  <a class="plate" href="#arrival" aria-label="Maruti Suzuki, back to start"><img src="assets/maruti-suzuki-logo.svg" alt="Maruti Suzuki" onerror="this.parentNode.classList.add('missing')"><span class="miss">Logo missing: assets/maruti-suzuki-logo.svg</span></a>
+  <div class="nav-name"><i></i>AAROH <span lang="hi">आरोह</span></div>
+  <nav class="nav-links" aria-label="Story chapters">
+    <a href="#arrival" data-nav="0">Arrival</a><a href="#front" data-nav="1">Front</a><a href="#side" data-nav="2">Profile</a><a href="#rear" data-nav="3">Rear</a><a href="#spin" data-nav="4">360°</a><a href="#parts" data-nav="5">Explore</a><a href="#explode" data-nav="6">Exploded</a><a href="#above" data-nav="7">Above</a><a href="#reveal" data-nav="8">Reveal</a>
+  </nav>
+  <div class="nav-tools">
+    <button class="tbtn" id="btn-studio" type="button" aria-pressed="false" title="Free 3D exploration (S)"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg><span class="t">3D Studio</span></button>
+    <button class="tbtn icon" id="btn-light" type="button" aria-pressed="false" title="Switch lighting: studio / dusk (L)" aria-label="Switch lighting"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    <button class="tbtn icon" id="btn-full" type="button" title="Full screen (F)" aria-label="Toggle full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+</header>
+<div class="progress" aria-hidden="true"><i id="prog"></i></div>
+<nav class="rail" aria-label="Scenes">
+  <button type="button" data-goto="0"><span>Arrival</span></button><button type="button" data-goto="1"><span>Front design</span></button><button type="button" data-goto="2"><span>Side profile</span></button><button type="button" data-goto="3"><span>Rear design</span></button><button type="button" data-goto="4"><span>360° study</span></button><button type="button" data-goto="5"><span>Component explorer</span></button><button type="button" data-goto="6"><span>Exploded view</span></button><button type="button" data-goto="7"><span>From above</span></button><button type="button" data-goto="8"><span>Final reveal</span></button>
+</nav>
+
+<main id="story">
+  <section class="scene hero" id="arrival" data-vh="120" aria-label="Arrival">
+    <div class="hold">
+      <div class="hero-copy">
+        <span class="plate lg"><img src="assets/maruti-suzuki-logo.svg" alt="Maruti Suzuki" onerror="this.parentNode.classList.add('missing')"><span class="miss">Logo asset missing: assets/maruti-suzuki-logo.svg</span></span>
+        <p class="eyebrow">Meet AAROH · India 2035</p>
+        <h1>AAROH<span class="deva" lang="hi">आरोह</span></h1>
+        <p class="tagline">Designed for a brighter tomorrow.</p>
+        <p class="sub">India's 2035 electric ride-service sedan · 5 seats · 4,250 mm · 55 kWh sodium-ion · ₹12.8 lakh</p>
+        <div class="row"><a class="btn primary" href="#front">Scroll to explore</a><button class="btn" type="button" data-act="studio">Explore in 3D</button></div>
+      </div>
+    </div>
+    <div class="cue" aria-hidden="true"><span>Scroll</span><i></i></div>
+  </section>
+
+  <section class="scene" id="front" data-vh="170" aria-labelledby="h-front">
+    <div class="hold">
+      <div class="panel">
+        <p class="eyebrow">01 · Front design</p>
+        <h2 id="h-front">A face built around the crash zone.</h2>
+        <p>The 790 mm front overhang carries the 110 kW motor and the crash structure. Slim wrap-around headlamps run into a gloss-black grille with the Suzuki emblem, and vertical light signatures frame the corner intakes.</p>
+        <div class="specs"><div class="spec"><b>1,780 mm</b><span>Overall width</span></div><div class="spec"><b>1,550 mm</b><span>Overall height</span></div><div class="spec"><b>790 mm</b><span>Front overhang · motor &amp; crash zone</span></div><div class="spec"><b>30 L</b><span>Frunk under the bonnet</span></div></div>
+        <p class="note"><b>Cd 0.25</b> drag target from the low sedan body.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="side" data-vh="190" aria-labelledby="h-side">
+    <div class="hold top">
+      <div class="panel">
+        <p class="eyebrow">02 · Side profile</p>
+        <h2 id="h-side">4.25 metres. Every millimetre has a job.</h2>
+        <p>790 mm for the motor and crash zone, a 2,650 mm wheelbase for the floor battery and rear legroom, 810 mm for a 400 L boot.</p>
+        <div class="specs"><div class="spec"><b>2,650 mm</b><span>Wheelbase</span></div><div class="spec"><b>180 mm</b><span>Ground clearance (145 mm loaded)</span></div><div class="spec"><b>605 mm</b><span>Seat height, easy in and out</span></div><div class="spec"><b>5.0 m</b><span>Turning radius</span></div></div>
+        <p class="note">Kerb 1,580 kg · gross 2,030 kg · payload 450 kg · tyres 195/65 R15 (690 kg rating each)</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="rear" data-vh="170" aria-labelledby="h-rear">
+    <div class="hold right">
+      <div class="panel">
+        <p class="eyebrow">03 · Rear design</p>
+        <h2 id="h-rear">A locked 400 L boot, and a port that fills it with range.</h2>
+        <p>The 810 mm rear overhang holds a 400-litre boot: two large suitcases, locked away. On the left rear quarter, a flap opens onto the CCS2 charging port.</p>
+        <div class="specs"><div class="spec"><b>400 L</b><span>Boot, locked</span></div><div class="spec"><b>~24 min</b><span>10→80% on a 120 kW DC charger</span></div><div class="spec"><b>11 kW</b><span>AC on-board charger</span></div><div class="spec"><b>7.4 kW</b><span>Home charger in the box · 10→100% in 6.9 h</span></div></div>
+        <p class="note">Connected LED tail lamps, black garnish and the MARUTI SUZUKI plate follow the reference rear view.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="spin" data-vh="300" aria-labelledby="h-spin">
+    <div class="hold">
+      <div class="panel">
+        <p class="eyebrow">04 · 360° study</p>
+        <h2 id="h-spin">One proportion, from every side.</h2>
+        <p>Range on a full charge, by duty cycle:</p>
+        <ul class="stats">
+          <li data-stat="0"><b>331 km</b><span>City taxi at 45 °C with AC · 154 Wh/km</span></li>
+          <li data-stat="1"><b>370 km</b><span>Highway at 90 km/h · 138 Wh/km</span></li>
+          <li data-stat="2"><b>411 km</b><span>Everyday driving with AC · 124 Wh/km</span></li>
+          <li data-stat="3"><b>520 km</b><span>Official Indian test · 98 Wh/km</span></li>
+        </ul>
+        <p class="note">55 kWh sodium-ion, 51 kWh usable · 110 kW, 230 Nm, front-wheel drive · ~9 s 0–100 km/h · 150 km/h, capped in taxi mode</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="parts" data-vh="170" aria-labelledby="h-parts">
+    <div class="hold">
+      <div class="panel wide">
+        <p class="eyebrow">05 · Component explorer</p>
+        <h2 id="h-parts">Tap a part to inspect it.</h2>
+        <p>Select directly on the car or from the list. Isolate a part to study it on its own, then restore the full vehicle.</p>
+        <div class="chips" id="chips"></div>
+        <div class="row"><button class="btn" type="button" data-act="studio"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/></svg>Rotate in 3D studio</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="explode" data-vh="230" aria-labelledby="h-explode">
+    <div class="hold">
+      <div class="panel">
+        <p class="eyebrow">06 · Exploded view</p>
+        <h2 id="h-explode">Panel by panel, down to the skateboard.</h2>
+        <p>Keep scrolling to separate the panels, glass, lamps and wheels along their fitting directions.</p>
+        <p class="note">The battery, motor, boot and frunk blocks are <b>schematic</b>: placed from the package layout in the deck (battery under the floor, motor in the 790 mm front zone), not engineering geometry.</p>
+        <div class="row"><button class="btn" type="button" data-act="studio-explode">Explode in the studio</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="above" data-vh="180" aria-labelledby="h-above">
+    <div class="hold right">
+      <div class="panel">
+        <p class="eyebrow">07 · From above</p>
+        <h2 id="h-above">Battery under the floor. Cabin on top.</h2>
+        <p>The X-ray pass shows where the pack sits inside the 2,650 mm wheelbase, with the 400 L boot and 30 L frunk drawn to their stated volumes.</p>
+        <div class="specs"><div class="spec"><b>55 kWh</b><span>Sodium-ion · 51 kWh usable</span></div><div class="spec"><b>~400 V</b><span>Liquid-cooled · IP67 sealed</span></div><div class="spec"><b>~365 kg</b><span>Pack weight</span></div><div class="spec"><b>8 years</b><span>Battery warranty · up to 5 lakh km</span></div></div>
+        <p class="note">The references don't document the underbody, so it's shown only as a schematic footprint.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene reveal" id="reveal" data-vh="150" aria-labelledby="h-reveal">
+    <div class="hold">
+      <div class="panel">
+        <span class="plate lg"><img src="assets/maruti-suzuki-logo.svg" alt="Maruti Suzuki" onerror="this.parentNode.classList.add('missing')"><span class="miss">Logo asset missing: assets/maruti-suzuki-logo.svg</span></span>
+        <p class="eyebrow">AAROH · India 2035</p>
+        <h2 id="h-reveal">Designed for a brighter tomorrow.</h2>
+        <div class="facts">
+          <div><b>5 seats (2 + 3)</b>1,380 mm rear shoulder room</div>
+          <div><b>4,250 × 1,780 × 1,550</b>mm, on a 2,650 mm wheelbase</div>
+          <div><b>55 kWh sodium-ion</b>331–520 km by test cycle</div>
+          <div><b>~24 min</b>10→80% on 120 kW DC</div>
+          <div><b>6 airbags · Level 2 ADAS</b>5-star Bharat NCAP target</div>
+          <div><b>₹12.8 lakh</b>5 lakh km design life over 8 years</div>
+        </div>
+        <div class="row"><button class="btn primary" type="button" data-act="restart"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg>Restart experience</button><button class="btn" type="button" data-act="studio">Explore in 3D</button></div>
+        <p class="credit">Concept proposal by Team LARP · OUTR, XCELerate 2026 Round 2. Figures are AAROH design targets from the proposal deck. The 3D model is built procedurally from the deck's renders and dimension drawings; areas the references don't show are approximated. Maruti Suzuki and the Suzuki "S" are trademarks of their owners.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Inspector -->
+<aside id="inspector" aria-live="polite" aria-labelledby="insp-title">
+  <button class="x" type="button" id="insp-close" aria-label="Close inspector">×</button>
+  <span class="tag" id="insp-tag"></span>
+  <h3 id="insp-title"></h3>
+  <p id="insp-desc"></p>
+  <dl id="insp-specs"></dl>
+  <p class="src" id="insp-src"></p>
+  <div class="row">
+    <button class="btn" type="button" id="insp-isolate" aria-pressed="false">Isolate</button>
+    <button class="btn" type="button" id="insp-restore">Show full car</button>
+  </div>
+</aside>
+
+<!-- Studio toolbar -->
+<div class="hint" aria-hidden="true">Drag to rotate · Scroll or pinch to zoom · Tap a part · Esc to exit</div>
+<div id="parts-pop" role="dialog" aria-label="Parts list"><div class="chips" id="chips-studio"></div></div>
+<div id="studio" role="toolbar" aria-label="3D studio controls">
+  <div class="grp"><span class="grp-t">View</span>
+    <button class="tbtn" type="button" data-preset="front">Front</button>
+    <button class="tbtn" type="button" data-preset="side">Side</button>
+    <button class="tbtn" type="button" data-preset="rear">Rear</button>
+    <button class="tbtn" type="button" data-preset="top">Top</button>
+    <button class="tbtn" type="button" data-preset="three">3/4</button>
+  </div>
+  <div class="grp">
+    <button class="tbtn icon" type="button" data-sact="zoomin" title="Zoom in (+)" aria-label="Zoom in"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"/></svg></button>
+    <button class="tbtn icon" type="button" data-sact="zoomout" title="Zoom out (−)" aria-label="Zoom out"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M8 11h6"/></svg></button>
+    <button class="tbtn icon" type="button" data-sact="reset" title="Reset camera (R)" aria-label="Reset camera"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg></button>
+    <button class="tbtn icon" type="button" data-sact="spin" title="Auto-rotate" aria-label="Auto-rotate" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 12c0-3 4-5 9-5s9 2 9 5-4 5-9 5"/><path d="M9 14l3 3-3 3"/></svg></button>
+  </div>
+  <div class="grp">
+    <button class="tbtn" type="button" data-sact="explode" aria-pressed="false" title="Exploded view (E)">Explode</button>
+    <button class="tbtn" type="button" data-sact="xray" aria-pressed="false" title="X-ray (X)">X-ray</button>
+    <button class="tbtn" type="button" data-sact="parts" aria-pressed="false">Parts</button>
+    <button class="tbtn" type="button" data-sact="restore" title="Restore complete car">Restore</button>
+  </div>
+  <div class="grp">
+    <button class="tbtn" type="button" data-sact="exit" title="Back to the story (Esc)"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg><span class="t">Back to story</span></button>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* Watchdog: if the module script never starts (blocked CDN, parse error, very old browser), say so instead of hanging on the loader. */
+setTimeout(function () {
+  if (window.__aaroh) return;
+  var f = document.getElementById('fatal');
+  document.getElementById('fatal-title').textContent = 'The page script did not start';
+  document.getElementById('fatal-msg').textContent = 'The browser did not run the main script. It needs a current browser with ES module support, and network access to cdn.jsdelivr.net and cdnjs.cloudflare.com.';
+  f.hidden = false;
+}, 20000);
+</script>
+<script type="module">
+/* =====================================================================
+   AAROH · immersive 3D experience
+   Three.js r170 + GSAP 3.12.5 ScrollTrigger. Single file, no build step.
+   Coordinate system: 1 unit = 1 metre, +X = forward, +Y = up, +Z = car's right.
+   Origin: centre of the 4,250 mm length, on the ground, on the centreline.
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const DEG = Math.PI / 180;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const sat = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const sstep = (a, b, v) => { const t = sat((v - a) / (b - a)); return t * t * (3 - 2 * t); };
+const smin = (a, b, k) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; };
+const smax = (a, b, k) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.max(a, b) + h * h * k * 0.25; };
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const yieldUI = () => new Promise((res) => { let d = false; const f = () => { if (!d) { d = true; res(); } }; requestAnimationFrame(f); setTimeout(f, 34); });
+const IS_TOUCH = matchMedia('(pointer: coarse)').matches;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LOW = IS_TOUCH || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+const QS = new URLSearchParams(location.search);
+// every visit starts on the Arrival scene: no restored scroll position, no deep-link hash
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+window.scrollTo(0, 0);
+
+/* ---------------- loader & errors ---------------- */
+// no loading screen: the hero shows straight away and the car fades in when it is built
+const Loader = {
+  el: null, v: 0,
+  set(v) { this.v = Math.max(this.v, clamp(v, 0, 1)); },
+  done() { this.v = 1; },
+};
+class FatalError extends Error { constructor(title, message) { super(message); this.title = title; } }
+function showFatal(title, message, detail = '') {
+  $('#fatal-title').textContent = title; $('#fatal-msg').textContent = message; $('#fatal-detail').textContent = detail;
+  $('#fatal').hidden = false; Loader.el?.classList.add('err');
+}
+window.__aaroh = { ready: false, errors: [] };
+const earlyFail = (msg) => { if (!window.__aaroh.ready && $('#fatal').hidden) showFatal('The experience could not start', 'A script error stopped the 3D scene before it finished loading. Reload to try again; the details below help with debugging.', msg); };
+window.addEventListener('error', (e) => { const m = String(e.message || e); window.__aaroh.errors.push(m); earlyFail(m); });
+window.addEventListener('unhandledrejection', (e) => { const m = String(e.reason?.message || e.reason); window.__aaroh.errors.push(m); earlyFail(m); });
+
+/* ---------------- libraries ---------------- */
+let THREE, OrbitControls, EffectComposer, RenderPass, UnrealBloomPass, OutputPass, ShaderPass, SVGLoader, RoundedBoxGeometry, Reflector, RectAreaLightUniformsLib;
+async function loadLibraries() {
+  try {
+    THREE = await import('three');
+    const m = await Promise.all([
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/postprocessing/EffectComposer.js'),
+      import('three/addons/postprocessing/RenderPass.js'),
+      import('three/addons/postprocessing/UnrealBloomPass.js'),
+      import('three/addons/postprocessing/OutputPass.js'),
+      import('three/addons/postprocessing/ShaderPass.js'),
+      import('three/addons/loaders/SVGLoader.js'),
+      import('three/addons/geometries/RoundedBoxGeometry.js'),
+      import('three/addons/objects/Reflector.js'),
+      import('three/addons/lights/RectAreaLightUniformsLib.js'),
+    ]);
+    ({ OrbitControls } = m[0]); ({ EffectComposer } = m[1]); ({ RenderPass } = m[2]); ({ UnrealBloomPass } = m[3]);
+    ({ OutputPass } = m[4]); ({ ShaderPass } = m[5]); ({ SVGLoader } = m[6]); ({ RoundedBoxGeometry } = m[7]);
+    ({ Reflector } = m[8]); ({ RectAreaLightUniformsLib } = m[9]);
+  } catch (err) {
+    throw new FatalError('The 3D engine could not be loaded', `Three.js r170 is loaded from cdn.jsdelivr.net. Check the internet connection or any content blocker, then reload. (${err.message})`);
+  }
+}
+function webgl2Available() { try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; } }
+
+/* =====================================================================
+   1. PACKAGE — every figure below comes from the AAROH deck (slides 3–4)
+      unless marked APPROX.
+   ===================================================================== */
+const PKG = {
+  L: 4.25, W: 1.78, H: 1.55, WB: 2.65, FOH: 0.79, ROH: 0.81,
+  GC: 0.18, GC_LADEN: 0.145, tyreW: 0.195, tyreAR: 0.65, rimIn: 15,
+  trackF: 1.535, trackR: 1.53, // APPROX: track widths are not given in the deck
+};
+const XF = PKG.L / 2, XR = -PKG.L / 2, HW = PKG.W / 2;
+const XFA = XF - PKG.FOH;                 //  1.335 front axle
+const XRA = XR + PKG.ROH;                 // -1.315 rear axle
+const RIM_R = (PKG.rimIn * 0.0254) / 2;   //  0.1905 (15-inch rim)
+const TYRE_R = RIM_R + PKG.tyreW * PKG.tyreAR; // 0.31725 → Ø 634.5 mm, computed from 195/65 R15
+const WHEEL_Y = TYRE_R - 0.004;           // small static tyre deflection (APPROX)
+const ARCH = { r: 0.365, y: WHEEL_Y + 0.016, inner: 0.575 }; // tighter arches: tyre fills the opening as in the reference
+
+/* ---------- monotone cubic curves baked into lookup tables ---------- */
+function monoCurve(points) {
+  const pts = points.slice().sort((a, b) => a[0] - b[0]);
+  const n = pts.length, xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  const d = [], m = new Array(n);
+  for (let i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
+  m[0] = d[0]; m[n - 1] = d[n - 2];
+  for (let i = 1; i < n - 1; i++) m[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2;
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+    const a = m[i] / d[i], b = m[i + 1] / d[i], s = a * a + b * b;
+    if (s > 9) { const t = 3 / Math.sqrt(s); m[i] = t * a * d[i]; m[i + 1] = t * b * d[i]; }
+  }
+  return (x) => {
+    if (x <= xs[0]) return ys[0];
+    if (x >= xs[n - 1]) return ys[n - 1];
+    let lo = 0, hi = n - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (xs[mid] > x) hi = mid; else lo = mid; }
+    const h = xs[hi] - xs[lo], t = (x - xs[lo]) / h, t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * ys[lo] + (t3 - 2 * t2 + t) * h * m[lo] + (-2 * t3 + 3 * t2) * ys[hi] + (t3 - t2) * h * m[hi];
+  };
+}
+function bake(fn, a, b, n) {
+  const arr = new Float64Array(n + 1);
+  for (let i = 0; i <= n; i++) arr[i] = fn(a + ((b - a) * i) / n);
+  const inv = n / (b - a);
+  return (x) => { const t = (x - a) * inv; if (t <= 0) return arr[0]; if (t >= n) return arr[n]; const i = t | 0; return arr[i] + (arr[i + 1] - arr[i]) * (t - i); };
+}
+const curve = (pts, a, b, n = 1600) => bake(monoCurve(pts), a, b, n);
+function linear(pts) { // piecewise-linear (sorted by x)
+  const p = pts.slice().sort((a, b) => a[0] - b[0]);
+  return (x) => { if (x <= p[0][0]) return p[0][1]; for (let i = 1; i < p.length; i++) if (x <= p[i][0]) { const t = (x - p[i - 1][0]) / (p[i][0] - p[i - 1][0]); return p[i - 1][1] + (p[i][1] - p[i - 1][1]) * t; } return p[p.length - 1][1]; };
+}
+function sdPoly(px, py, poly) { // signed distance to a closed 2D polygon (negative inside)
+  const n = poly.length >> 1;
+  let d = Infinity, s = 1;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = poly[2 * i], yi = poly[2 * i + 1], xj = poly[2 * j], yj = poly[2 * j + 1];
+    const ex = xj - xi, ey = yj - yi, wx = px - xi, wy = py - yi;
+    const t = clamp((wx * ex + wy * ey) / (ex * ex + ey * ey), 0, 1);
+    const bx = wx - ex * t, by = wy - ey * t, dd = bx * bx + by * by;
+    if (dd < d) d = dd;
+    const c1 = py >= yi, c2 = py < yj, c3 = ex * wy > ey * wx;
+    if ((c1 && c2 && c3) || (!c1 && !c2 && !c3)) s = -s;
+  }
+  return s * Math.sqrt(d);
+}
+const polyArr = (pts) => Float64Array.from(pts.flat());
+function ellipsePoly(cx, cy, rx, ry, n = 28) { const a = []; for (let i = 0; i < n; i++) { const t = (i / n) * Math.PI * 2; a.push([cx + Math.cos(t) * rx, cy + Math.sin(t) * ry]); } return polyArr(a); }
+function roundRectPoly(cx, cy, hx, hy, r, n = 6) {
+  const a = [], c = [[hx - r, hy - r, 0], [-(hx - r), hy - r, 90], [-(hx - r), -(hy - r), 180], [hx - r, -(hy - r), 270]];
+  for (const [ox, oy, s] of c) for (let i = 0; i <= n; i++) { const t = (s + (90 * i) / n) * DEG; a.push([cx + ox + Math.cos(t) * r, cy + oy + Math.sin(t) * r]); }
+  return polyArr(a);
+}
+
+/* =====================================================================
+   2. BODY AS A SIGNED DISTANCE FIELD
+      Profiles were read off the deck's side, front and 3/4 renders and
+      scaled to the 4,250 × 1,780 × 1,550 mm envelope.
+   ===================================================================== */
+const B = {};
+function buildProfiles() {
+  // centre-line top of the lower body: boot lid → belt shelf → bonnet
+  B.top = curve([[-2.16, 1.06], [-2.125, 1.115], [-2.10, 1.150], [-2.075, 1.168], [-2.045, 1.176], [-1.95, 1.172], [-1.80, 1.170], [-1.66, 1.170], [-1.25, 1.142], [-0.90, 1.117], [-0.40, 1.089], [0.10, 1.068], [0.50, 1.072], [0.80, 1.078], [0.92, 1.072], [1.10, 1.048], [1.35, 1.012], [1.60, 0.976], [1.80, 0.948], [1.95, 0.926], [2.04, 0.906], [2.09, 0.884], [2.13, 0.850], [2.16, 0.805]], -2.2, 2.2);
+  B.crown = curve([[-2.16, 0.022], [-1.70, 0.022], [-1.60, 0.016], [0.80, 0.016], [0.92, 0.030], [1.40, 0.022], [2.05, 0.010], [2.16, 0.008]], -2.2, 2.2);
+  // rear bumper runs lower (reference rear view) but stays above the 18° departure line
+  B.bot = curve([[-2.16, 0.36], [-2.13, 0.29], [-2.09, 0.27], [-2.0, 0.262], [-1.90, 0.255], [-1.65, 0.24], [-1.35, 0.215], [-1.0, 0.185], [-0.9, 0.18], [0.9, 0.18], [1.05, 0.188], [1.40, 0.212], [1.75, 0.228], [1.97, 0.245], [2.06, 0.27], [2.12, 0.31], [2.16, 0.36]], -2.2, 2.2);
+  B.xF = curve([[0.15, 1.90], [0.20, 1.965], [0.26, 2.035], [0.32, 2.082], [0.40, 2.112], [0.50, 2.125], [0.62, 2.122], [0.72, 2.108], [0.80, 2.088], [0.86, 2.062], [0.92, 2.01], [1.0, 1.92]], 0.1, 1.3);
+  B.xR = curve([[0.15, 1.93], [0.22, 1.985], [0.28, 2.04], [0.36, 2.085], [0.48, 2.112], [0.62, 2.125], [0.80, 2.118], [0.95, 2.105], [1.06, 2.090], [1.12, 2.086], [1.155, 2.098], [1.175, 2.100], [1.195, 2.07], [1.25, 1.98]], 0.1, 1.3);
+  B.hwLow = curve([[0.14, 0.76], [0.18, 0.80], [0.21, 0.838], [0.26, 0.860], [0.32, 0.870], [0.42, 0.878], [0.55, 0.885], [0.68, 0.890], [0.80, 0.8895], [0.88, 0.887], [0.95, 0.882], [1.02, 0.877], [1.10, 0.870]], 0.1, 1.3);
+  B.crease = curve([[-2.16, 1.058], [-2.10, 1.055], [-1.80, 1.040], [-1.40, 1.012], [-0.97, 0.985], [-0.50, 0.958], [0.07, 0.938], [0.80, 0.918], [1.30, 0.905], [1.75, 0.885], [2.10, 0.86], [2.16, 0.855]], -2.2, 2.2);
+  B.belt = curve([[-2.16, 1.152], [-1.70, 1.150], [-1.25, 1.125], [-0.90, 1.100], [-0.40, 1.072], [0.10, 1.045], [0.50, 1.022], [0.80, 1.008], [1.0, 1.0], [2.16, 0.95]], -2.2, 2.2);
+  B.roof = curve([[-1.75, 1.30], [-1.40, 1.385], [-1.25, 1.43], [-0.98, 1.505], [-0.75, 1.533], [-0.45, 1.548], [-0.25, 1.550], [0.0, 1.545], [0.20, 1.522], [0.32, 1.49], [0.5, 1.41], [0.8, 1.25]], -1.8, 1.0);
+  B.bendF = bake((a) => 0.105 * Math.pow(a, 2.3), 0, 1.4, 700);
+  B.bendR = bake((a) => 0.115 * Math.pow(a, 2.1), 0, 1.4, 700); // rounder tail in plan view
+  B.shoulder = bake((d) => 0.22 * d + 3.0 * Math.pow(d, 1.7), 0, 1.0, 1000);
+  B.wsWrap = bake((a) => 0.047 * Math.pow(a, 2.4), 0, 1.8, 600);
+  B.blWrap = bake((a) => 0.0256 * Math.pow(a, 2.2), 0, 1.8, 600);
+  B.zBon = (x) => 0.71 + 0.05 * sat((1.9 - x) / 1.0);
+  B.hwBelt = bake((x) => halfWidth(x, B.belt(x), false), -2.2, 2.2, 1100);
+}
+function halfWidth(x, y, detail) {
+  const yS = B.crease(x);
+  let hw = y <= yS ? B.hwLow(y) : B.hwLow(yS) - B.shoulder(y - yS);
+  if (detail) {
+    if (y > 0.16 && y < 0.95) { // wheel-arch flares
+      const dyA = y - ARCH.y, a = x - XFA, b = x - XRA;
+      const rF = Math.sqrt(a * a + dyA * dyA) - ARCH.r - 0.036;
+      const rR = Math.sqrt(b * b + dyA * dyA) - ARCH.r - 0.036;
+      hw += 0.011 * (Math.exp(-rF * rF * 476) + Math.exp(-rR * rR * 476)) * sstep(0.17, 0.3, y);
+    }
+    if (x > -1.06 && x < 1.0 && y > 0.24 && y < 0.7) { // sculpted lower-door sweep
+      const t = sat((0.95 - x) / 1.95), yU = 0.50 + 0.13 * t, yL = yU - 0.17;
+      const fade = sstep(-1.05, -0.82, x) * (1 - sstep(0.78, 0.98, x));
+      hw -= 0.017 * fade * (1 - sstep(yU - 0.01, yU + 0.004, y)) * sstep(yL - 0.06, yL + 0.07, y); // deeper lower-door scallop, as drawn
+    }
+  }
+  return hw * (1 - 0.010 * sstep(-1.5, -2.1, x) - 0.008 * sstep(1.55, 2.1, x));
+}
+function planDist(x, y, az, hw) { // lower body in plan view: rounded box with curved front/rear faces
+  const azn = az / HW;
+  let qx, r;
+  if (x >= 0) { r = 0.30; qx = x - (B.xF(y) - B.bendF(azn)) + r; } else { r = 0.32; qx = -x - (B.xR(y) - B.bendR(azn)) + r; }
+  const qz = az - hw + r, mx = qx > 0 ? qx : 0, mz = qz > 0 ? qz : 0;
+  return Math.sqrt(mx * mx + mz * mz) + Math.min(Math.max(qx, qz), 0) - r;
+}
+function bonnetRidge(x, az) {
+  if (x < 0.9 || x > 2.12) return 0;
+  const wz = 0.27 + 0.27 * sat((2.0 - x) / 1.1);
+  return 0.010 * sstep(0.92, 1.08, x) * (1 - sstep(2.0, 2.11, x)) * (1 - sstep(wz - 0.014, wz + 0.014, az));
+}
+const POLY = {}, UMAP = {};
+function frontRecess(x, y, az) {
+  let r = 0;
+  if (y > 0.60 && y < 0.85 && az < 0.55) { const m = sdPoly(az, y, POLY.grilleUp); if (m < 0.004) r = Math.max(r, 0.020 * (1 - sstep(-0.012, 0.002, m))); }
+  if (y > 0.27 && y < 0.49 && az < 0.66) { const m = sdPoly(az, y, POLY.grilleLow); if (m < 0.004) r = Math.max(r, 0.034 * (1 - sstep(-0.014, 0.002, m))); }
+  if (y > 0.29 && y < 0.72 && az > 0.5) { const m = sdPoly(UMAP.front(x, az), y, POLY.intake); if (m < 0.004) r = Math.max(r, 0.028 * (1 - sstep(-0.012, 0.002, m))); }
+  return r;
+}
+function rearRecess(x, y, az) {
+  if (y < 0.47 && az < 0.74) { const m = sdPoly(az, y, POLY.diffuser); if (m < 0.004) return 0.024 * (1 - sstep(-0.012, 0.002, m)); }
+  return 0;
+}
+/** Full body SDF. T (optional) receives the individual terms for part classification. */
+function sdfBody(x, y, z, T) {
+  const az = z < 0 ? -z : z, azn = az / HW;
+  const hw = halfWidth(x, y, true);
+  const dTop = y - (B.top(x) - B.crown(x) * azn * azn + bonnetRidge(x, az));
+  const dBot = B.bot(x) + 0.022 * sstep(0.55, 0.86, az) - y;
+  let pd = planDist(x, y, az, hw), rec = 0;
+  if (x > 1.72) rec = frontRecess(x, y, az); else if (x < -1.85) rec = rearRecess(x, y, az);
+  pd += rec;
+  let fl = smax(pd, dTop, 0.055);
+  fl = smax(fl, dBot, 0.05);
+  // greenhouse
+  const belt = B.belt(x), dyb = y - belt;
+  const ghw = B.hwBelt(x) - 0.004 - 0.40 * dyb - 0.22 * dyb * dyb; // stronger tumblehome: narrower roof as in the front/rear views
+  const dSide = az - ghw;
+  const dRoof = y - (B.roof(x) - 0.104 * az * az);
+  // windscreen raked to ~31° from the cowl at x 0.93; rear screen ~21° down to a short deck (side-view drawing)
+  const ux = x - 0.93, uy = y - 1.075;
+  const dWS = ux * 0.5210 + uy * 0.8536 + B.wsWrap(az / 0.72) - 0.012 * Math.sin(Math.PI * sat((ux * -0.8536 + uy * 0.5210) / 0.855));
+  const vx = x + 0.96, vy = y - 1.50;
+  const dBL = vx * -0.3657 + vy * 0.9307 + B.blWrap(az / 0.66) - 0.010 * Math.sin(Math.PI * sat((vx * -0.9307 + vy * -0.3657) / 0.9025));
+  let fc = smax(dRoof, dSide, 0.075);
+  fc = smax(fc, dWS, 0.05);
+  fc = smax(fc, dBL, 0.06);
+  fc = smax(fc, belt - 0.07 - y, 0.02);
+  const f0 = smin(fl, fc, 0.016);
+  // wheel arches
+  const dyA = y - ARCH.y, dxF = x - XFA, dxR = x - XRA;
+  const dA = Math.sqrt(Math.min(dxF * dxF, dxR * dxR) + dyA * dyA) - ARCH.r;
+  const well = Math.max(dA, ARCH.inner - az);
+  if (T) { T.pd = pd; T.dTop = dTop; T.dBot = dBot; T.fl = fl; T.fc = fc; T.dRoof = dRoof; T.dSide = dSide; T.dWS = dWS; T.dBL = dBL; T.f0 = f0; T.well = well; }
+  return smax(f0, -well, 0.014);
+}
+
+/* ---------- wrap-around parameter u (arc length around the nose / tail) ---------- */
+function buildUMap() {
+  const mk = (cx, sign, yRef) => {
+    const N = 260, th1 = 2.3, xs = [], zs = [];
+    for (let i = 0; i <= N; i++) {
+      const th = (th1 * i) / N, c = Math.cos(th), s = Math.sin(th);
+      let lo = 0.02, hi = 2.8;
+      for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2, x = cx + sign * c * m; if (planDist(x, yRef, s * m, halfWidth(x, yRef, false)) < 0) lo = m; else hi = m; }
+      const m = (lo + hi) / 2; xs.push(cx + sign * c * m); zs.push(s * m);
+    }
+    const L = new Float64Array(N + 1);
+    for (let i = 1; i <= N; i++) L[i] = L[i - 1] + Math.hypot(xs[i] - xs[i - 1], zs[i] - zs[i - 1]);
+    const inv = N / th1;
+    return (x, az) => { const t = Math.atan2(az, sign * (x - cx)) * inv; if (t <= 0) return 0; if (t >= N) return L[N]; const i = t | 0; return L[i] + (L[i + 1] - L[i]) * (t - i); };
+  };
+  UMAP.front = mk(1.40, 1, 0.75);
+  UMAP.rear = mk(-1.45, -1, 1.0);
+}
+function surfX(sign, az, y) { let lo = 0.3, hi = 2.4; for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2, x = sign * m; if (planDist(x, y, az, halfWidth(x, y, false)) < 0) lo = m; else hi = m; } return (sign * (lo + hi)) / 2; }
+function surfZ(x, y) { let lo = 0, hi = 1.2; for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (planDist(x, y, m, halfWidth(x, y, false)) < 0) lo = m; else hi = m; } return (lo + hi) / 2; }
+/** surface z of the full body SDF at (x, y), searching inward from outside */
+function bodyZ(x, y) { let lo = 0, hi = 1.3; for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (sdfBody(x, y, m) < 0) lo = m; else hi = m; } return (lo + hi) / 2; }
+function bodyX(sign, y, z) { let lo = 0.2, hi = 2.4; for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (sdfBody(sign * m, y, z) < 0) lo = m; else hi = m; } return (sign * (lo + hi)) / 2; }
+function bodyY(x, z) { let lo = 0.1, hi = 1.8; for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (sdfBody(x, m, z) < 0) lo = m; else hi = m; } return (lo + hi) / 2; }
+function bodyNormal(x, y, z) { const e = 0.0008; const n = [sdfBody(x + e, y, z) - sdfBody(x - e, y, z), sdfBody(x, y + e, z) - sdfBody(x, y - e, z), sdfBody(x, y, z + e) - sdfBody(x, y, z - e)]; const l = Math.hypot(...n) || 1; return n.map((v) => v / l); }
+const FP = (az, y) => [UMAP.front(surfX(1, az, y), az), y];
+const SP = (x, y) => [UMAP.front(x, surfZ(x, y)), y];
+const RP = (az, y) => [UMAP.rear(surfX(-1, az, y), az), y];
+const RSP = (x, y) => [UMAP.rear(x, surfZ(x, y)), y];
+let yBF = null;
+const XB1 = -0.10, XB2 = -0.17, XD1 = -0.945, XD2 = -0.972;
+const xDF = (y) => 0.905 - 0.065 * sat((y - 0.25) / 0.78);
+const xB = (y) => -0.115 - 0.02 * sat((y - 0.25) / 0.8);
+const gBumpF = (x, y) => (x - 1.79) * 0.7668 - (y - 0.87) * 0.6416;
+const gBumpR = (x, y) => -(x + 1.89) * 0.7474 - (y - 0.99) * 0.6643;
+const SILL_X0 = XRA + ARCH.r - 0.03, SILL_X1 = XFA - ARCH.r + 0.03;
+function buildPolys() {
+  // large gloss-black hexagonal grille spanning between the headlamps (reference front view)
+  POLY.grilleUp = polyArr([[-0.1, 0.832], [0.42, 0.826], [0.50, 0.800], [0.46, 0.755], [0.30, 0.625], [-0.1, 0.620]]);
+  POLY.grilleLow = polyArr([[-0.1, 0.455], [0.47, 0.455], [0.53, 0.425], [0.60, 0.31], [-0.1, 0.31]]);
+  // full-width black lower diffuser band (reference rear view)
+  POLY.diffuser = polyArr([[-0.1, 0.445], [0.56, 0.445], [0.66, 0.405], [0.71, 0.30], [0.68, 0.22], [-0.1, 0.22]]);
+  POLY.intake = polyArr([FP(0.61, 0.33), FP(0.67, 0.63), FP(0.80, 0.675), FP(0.865, 0.65), FP(0.88, 0.42), FP(0.84, 0.33)]);
+  POLY.fang = polyArr([FP(0.588, 0.35), FP(0.606, 0.35), FP(0.659, 0.621), FP(0.752, 0.687), FP(0.744, 0.701), FP(0.641, 0.637)]);
+  // slim headlamps that sweep back along the wing to a point (reference side + 3/4 view)
+  POLY.head = polyArr([FP(0.405, 0.836), FP(0.56, 0.850), FP(0.70, 0.866), FP(0.80, 0.876), FP(0.855, 0.882), SP(1.86, 0.888), SP(1.74, 0.902), SP(1.62, 0.914), SP(1.66, 0.904), SP(1.76, 0.880), SP(1.86, 0.852), SP(1.90, 0.830), FP(0.85, 0.752), FP(0.76, 0.748), FP(0.60, 0.752), FP(0.48, 0.762), FP(0.405, 0.785)]);
+  POLY.drl = polyArr([[-0.1, 0.832], FP(0.405, 0.833), FP(0.56, 0.847), FP(0.70, 0.863), FP(0.80, 0.873), FP(0.855, 0.879), SP(1.86, 0.885), SP(1.74, 0.899), SP(1.625, 0.911), SP(1.645, 0.909), SP(1.75, 0.894), SP(1.86, 0.876), FP(0.85, 0.869), FP(0.80, 0.864), FP(0.70, 0.853), FP(0.56, 0.838), FP(0.405, 0.824), [-0.1, 0.823]]);
+  // wedge tail lamps: deep at the rear corner, tapering forward along the quarter, joined across the boot by an LED bar
+  POLY.tail = polyArr([RP(0.30, 1.030), RP(0.55, 1.036), RP(0.74, 1.040), RP(0.84, 1.040), RSP(-1.98, 1.040), RSP(-1.85, 1.038), RSP(-1.72, 1.034), RSP(-1.68, 1.030), RSP(-1.74, 1.010), RSP(-1.86, 0.972), RSP(-1.93, 0.912), RSP(-2.00, 0.885), RP(0.84, 0.875), RP(0.74, 0.900), RP(0.62, 0.945), RP(0.48, 0.985), RP(0.30, 1.000)]);
+  POLY.tailLED = polyArr([[-0.1, 1.020], RP(0.30, 1.024), RP(0.55, 1.030), RP(0.74, 1.034), RP(0.84, 1.034), RSP(-1.98, 1.034), RSP(-1.85, 1.032), RSP(-1.72, 1.028), RSP(-1.70, 1.026), RSP(-1.74, 1.021), RSP(-1.86, 1.024), RSP(-1.98, 1.027), RP(0.84, 1.027), RP(0.74, 1.027), RP(0.55, 1.022), RP(0.30, 1.016), [-0.1, 1.012]]);
+  POLY.garnish = polyArr([[-0.1, 1.034], [0.32, 1.032], [0.32, 0.998], [-0.1, 0.998]]);
+  POLY.dlo = polyArr([[0.76, 1.025], [0.67, 1.081], [0.45, 1.22], [0.23, 1.357], [0.12, 1.425], [0.02, 1.458], [-0.25, 1.474], [-0.50, 1.478], [-0.75, 1.470], [-0.92, 1.455], [-1.10, 1.405], [-1.25, 1.32], [-1.36, 1.215], [-1.395, 1.168], [-1.37, 1.148], [-1.20, 1.134], [-0.90, 1.106], [-0.40, 1.074], [0.10, 1.048], [0.50, 1.030]]);
+  POLY.quarter = polyArr([[-1.12, 1.30], [-1.112, 0.74], [-1.094, 0.713], [-1.031, 0.669], [-0.976, 0.614], [-0.932, 0.551], [-0.900, 0.481], [-0.880, 0.407], [-0.873, 0.33], [-0.873, 0.15], [-2.4, 0.15], [-2.4, 1.30]]);
+  POLY.pocketF = ellipsePoly(0.06, 0.924, 0.085, 0.026);
+  POLY.pocketR = ellipsePoly(-0.96, 0.971, 0.08, 0.025);
+  POLY.flap = roundRectPoly(-1.395, 0.985, 0.082, 0.064, 0.026);
+  yBF = linear([[-1, 0.846], [FP(0.405, 0.846)[0], 0.846], [FP(0.56, 0.860)[0], 0.860], [FP(0.70, 0.876)[0], 0.876], [FP(0.80, 0.886)[0], 0.886], [FP(0.855, 0.892)[0], 0.892], [SP(1.86, 0.894)[0], 0.894], [SP(1.70, 0.90)[0], 0.90], [9, 0.90]]);
+}
+
+/* =====================================================================
+   3. SURFACE EXTRACTION — naive surface nets, then Newton projection
+      onto the exact iso-surface with analytic-gradient normals.
+   ===================================================================== */
+const CORNER_EDGES = new Int8Array([0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3, 4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7]);
+async function surfaceNets(fn, b, h, onProg, coarse = 4) {
+  const x0 = b[0], y0 = b[1], z0 = b[2];
+  const nx = Math.round((b[3] - x0) / h) + 1, ny = Math.round((b[4] - y0) / h) + 1, nz = Math.round((b[5] - z0) / h) + 1;
+  const sY = nx, sZ = nx * ny, F = new Float32Array(nx * ny * nz);
+  if (coarse > 1) {
+    // coarse pass decides which blocks are near the surface; only those are sampled finely
+    const C = coarse, cnx = Math.ceil((nx - 1) / C) + 1, cny = Math.ceil((ny - 1) / C) + 1, cnz = Math.ceil((nz - 1) / C) + 1;
+    const CF = new Float32Array(cnx * cny * cnz);
+    for (let k = 0; k < cnz; k++) for (let j = 0; j < cny; j++) for (let i = 0; i < cnx; i++) CF[i + cnx * (j + cny * k)] = fn(x0 + i * C * h, y0 + j * C * h, z0 + k * C * h);
+    const band = C * h * 2.4, done = new Uint8Array(nx * ny * nz);
+    for (let ci = 0; ci < cnx - 1; ci++) {
+      for (let cj = 0; cj < cny - 1; cj++) for (let ck = 0; ck < cnz - 1; ck++) {
+        let mn = Infinity, pos = false, neg = false;
+        for (let c = 0; c < 8; c++) { const v = CF[ci + (c & 1) + cnx * (cj + ((c >> 1) & 1) + cny * (ck + (c >> 2)))]; const a = v < 0 ? -v : v; if (a < mn) mn = a; if (v > 0) pos = true; else neg = true; }
+        const full = (pos && neg) || mn < band, fill = pos ? band : -band;
+        const i0 = ci * C, j0 = cj * C, k0 = ck * C, i1 = Math.min(i0 + C, nx - 1), j1 = Math.min(j0 + C, ny - 1), k1 = Math.min(k0 + C, nz - 1);
+        for (let k = k0; k <= k1; k++) for (let j = j0; j <= j1; j++) {
+          let idx = i0 + sY * j + sZ * k;
+          for (let i = i0; i <= i1; i++, idx++) {
+            if (full) { if (done[idx] !== 2) { F[idx] = fn(x0 + i * h, y0 + j * h, z0 + k * h); done[idx] = 2; } }
+            else if (done[idx] === 0) { F[idx] = fill; done[idx] = 1; }
+          }
+        }
+      }
+      if (onProg && ci % 2 === 1) { onProg((0.7 * ci) / (cnx - 1)); await yieldUI(); }
+    }
+  } else {
+    for (let k = 0; k < nz; k++) for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) F[i + sY * j + sZ * k] = fn(x0 + i * h, y0 + j * h, z0 + k * h);
+  }
+  const cx = nx - 1, cy = ny - 1, cellV = new Int32Array(cx * cy * (nz - 1)).fill(-1);
+  const P = [], co = new Float64Array(8);
+  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    const base = i + sY * j + sZ * k; let mask = 0;
+    for (let c = 0; c < 8; c++) { const v = F[base + (c & 1) + sY * ((c >> 1) & 1) + sZ * (c >> 2)]; co[c] = v; if (v < 0) mask |= 1 << c; }
+    if (mask === 0 || mask === 255) continue;
+    let sx = 0, sy = 0, sz = 0, n = 0;
+    for (let e = 0; e < 24; e += 2) {
+      const a = CORNER_EDGES[e], bb = CORNER_EDGES[e + 1], va = co[a], vb = co[bb];
+      if ((va < 0) === (vb < 0)) continue;
+      const t = va / (va - vb);
+      sx += (a & 1) + t * ((bb & 1) - (a & 1));
+      sy += ((a >> 1) & 1) + t * (((bb >> 1) & 1) - ((a >> 1) & 1));
+      sz += (a >> 2) + t * ((bb >> 2) - (a >> 2));
+      n++;
+    }
+    cellV[i + cx * (j + cy * k)] = P.length / 3;
+    P.push(x0 + (i + sx / n) * h, y0 + (j + sy / n) * h, z0 + (k + sz / n) * h);
+  }
+  const I = [], cv = (i, j, k) => cellV[i + cx * (j + cy * k)];
+  const quad = (a, b2, c, d, flip) => { if (a < 0 || b2 < 0 || c < 0 || d < 0) return; if (flip) I.push(a, d, c, a, c, b2); else I.push(a, b2, c, a, c, d); };
+  for (let k = 0; k < nz; k++) for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const idx = i + sY * j + sZ * k, inside = F[idx] < 0;
+    if (i < nx - 1 && j > 0 && k > 0 && j < ny - 1 && k < nz - 1 && (F[idx + 1] < 0) !== inside) quad(cv(i, j - 1, k - 1), cv(i, j, k - 1), cv(i, j, k), cv(i, j - 1, k), !inside);
+    if (j < ny - 1 && i > 0 && k > 0 && i < nx - 1 && k < nz - 1 && (F[idx + sY] < 0) !== inside) quad(cv(i - 1, j, k - 1), cv(i - 1, j, k), cv(i, j, k), cv(i, j, k - 1), !inside);
+    if (k < nz - 1 && i > 0 && j > 0 && i < nx - 1 && j < ny - 1 && (F[idx + sZ] < 0) !== inside) quad(cv(i - 1, j - 1, k), cv(i, j - 1, k), cv(i, j, k), cv(i - 1, j, k), !inside);
+  }
+  const nv = P.length / 3, NRM = new Array(nv * 3), e = 0.0007, lim = h * 0.8;
+  for (let v = 0; v < nv; v++) {
+    let x = P[3 * v], y = P[3 * v + 1], z = P[3 * v + 2], gx = 0, gy = 1, gz = 0;
+    for (let it = 0; it < 2; it++) {
+      const f0 = fn(x, y, z);
+      gx = (fn(x + e, y, z) - fn(x - e, y, z)) / (2 * e);
+      gy = (fn(x, y + e, z) - fn(x, y - e, z)) / (2 * e);
+      gz = (fn(x, y, z + e) - fn(x, y, z - e)) / (2 * e);
+      if (it === 1) break;
+      const g2 = gx * gx + gy * gy + gz * gz || 1e-9;
+      let qx = (f0 * gx) / g2, qy = (f0 * gy) / g2, qz = (f0 * gz) / g2;
+      const ql = Math.sqrt(qx * qx + qy * qy + qz * qz);
+      if (ql > lim) { const s = lim / ql; qx *= s; qy *= s; qz *= s; }
+      x -= qx; y -= qy; z -= qz;
+    }
+    P[3 * v] = x; P[3 * v + 1] = y; P[3 * v + 2] = z;
+    const gl = Math.sqrt(gx * gx + gy * gy + gz * gz) || 1;
+    NRM[3 * v] = gx / gl; NRM[3 * v + 1] = gy / gl; NRM[3 * v + 2] = gz / gl;
+    if (onProg && v % 3000 === 2999) { onProg(0.7 + (0.3 * v) / nv); await yieldUI(); }
+  }
+  return { pos: P, nrm: NRM, idx: I };
+}
+
+/* ---------- triangle mesh that can be split exactly along scalar fields ---------- */
+class CutMesh {
+  constructor(pos, nrm, idx) { this.p = pos; this.n = nrm; this.t = idx; }
+  /** split every triangle crossing g = 0. box = [x0,x1,y0,y1,|z|0,|z|1]; outside the box g is treated as +1 */
+  cut(g, box) {
+    const P = this.p, N = this.n, T = this.t, nv0 = P.length / 3, gv = new Float64Array(nv0);
+    for (let i = 0; i < nv0; i++) {
+      const x = P[3 * i], y = P[3 * i + 1], z = P[3 * i + 2], az = z < 0 ? -z : z;
+      let v = 1;
+      if (!box || (x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3] && az >= box[4] && az <= box[5])) v = g(x, y, az, N[3 * i], N[3 * i + 1], N[3 * i + 2], z);
+      gv[i] = Math.abs(v) < 1e-9 ? 1e-9 : v;
+    }
+    const map = new Map(), out = [];
+    const ev = (i, j) => {
+      const key = i < j ? i * 4194304 + j : j * 4194304 + i;
+      let v = map.get(key);
+      if (v !== undefined) return v;
+      const t = gv[i] / (gv[i] - gv[j]);
+      v = P.length / 3;
+      P.push(P[3 * i] + (P[3 * j] - P[3 * i]) * t, P[3 * i + 1] + (P[3 * j + 1] - P[3 * i + 1]) * t, P[3 * i + 2] + (P[3 * j + 2] - P[3 * i + 2]) * t);
+      const nx = N[3 * i] + (N[3 * j] - N[3 * i]) * t, ny = N[3 * i + 1] + (N[3 * j + 1] - N[3 * i + 1]) * t, nz = N[3 * i + 2] + (N[3 * j + 2] - N[3 * i + 2]) * t;
+      const l = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      N.push(nx / l, ny / l, nz / l);
+      map.set(key, v);
+      return v;
+    };
+    for (let k = 0; k < T.length; k += 3) {
+      const a = T[k], b = T[k + 1], c = T[k + 2], sa = gv[a] > 0, sb = gv[b] > 0, sc = gv[c] > 0;
+      if (sa === sb && sb === sc) { out.push(a, b, c); continue; }
+      let A, Bv, C;
+      if (sa !== sb && sa !== sc) { A = a; Bv = b; C = c; } else if (sb !== sa && sb !== sc) { A = b; Bv = c; C = a; } else { A = c; Bv = a; C = b; }
+      const pAB = ev(A, Bv), pAC = ev(A, C);
+      out.push(A, pAB, pAC, pAB, Bv, C, pAB, C, pAC);
+    }
+    this.t = out;
+  }
+  centroid(k) { const P = this.p, T = this.t, a = 3 * T[k], b = 3 * T[k + 1], c = 3 * T[k + 2]; return [(P[a] + P[b] + P[c]) / 3, (P[a + 1] + P[b + 1] + P[c + 1]) / 3, (P[a + 2] + P[b + 2] + P[c + 2]) / 3]; }
+  /** collect a compact patch for a list of triangle offsets */
+  patch(list) {
+    const map = new Map(), pos = [], nrm = [], idx = [], P = this.p, N = this.n, T = this.t;
+    for (const k of list) for (let c = 0; c < 3; c++) {
+      const v = T[k + c]; let q = map.get(v);
+      if (q === undefined) { q = pos.length / 3; map.set(v, q); pos.push(P[3 * v], P[3 * v + 1], P[3 * v + 2]); nrm.push(N[3 * v], N[3 * v + 1], N[3 * v + 2]); }
+      idx.push(q);
+    }
+    return { pos, nrm, idx };
+  }
+}
+/* ---------- patch helpers ---------- */
+const emptyPatch = () => ({ pos: [], nrm: [], idx: [] });
+function mergePatches(list) { const out = emptyPatch(); for (const p of list) { if (!p) continue; const o = out.pos.length / 3; out.pos.push(...p.pos); out.nrm.push(...p.nrm); for (const i of p.idx) out.idx.push(i + o); } return out; }
+function mirrorZ(p) {
+  const pos = p.pos.slice(), nrm = p.nrm.slice(), idx = p.idx.slice();
+  for (let i = 2; i < pos.length; i += 3) { pos[i] = -pos[i]; nrm[i] = -nrm[i]; }
+  for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
+  return { pos, nrm, idx };
+}
+function offsetPatch(p, d) { const pos = p.pos.slice(); for (let i = 0; i < pos.length; i++) pos[i] += p.nrm[i] * d; return { pos, nrm: p.nrm.slice(), idx: p.idx.slice() }; }
+function boundaryWalls(p, depth) { // side walls from the patch outline down to an inward offset
+  const cnt = new Map();
+  for (let i = 0; i < p.idx.length; i += 3) for (let e = 0; e < 3; e++) {
+    const a = p.idx[i + e], b = p.idx[i + ((e + 1) % 3)], key = a < b ? a * 2097152 + b : b * 2097152 + a, c = cnt.get(key);
+    if (c) c.n++; else cnt.set(key, { n: 1, a, b });
+  }
+  const out = emptyPatch(), P = p.pos, N = p.nrm;
+  for (const { n, a, b } of cnt.values()) {
+    if (n !== 1) continue;
+    const A = [P[3 * a], P[3 * a + 1], P[3 * a + 2]], Bq = [P[3 * b], P[3 * b + 1], P[3 * b + 2]];
+    const A2 = [A[0] - N[3 * a] * depth, A[1] - N[3 * a + 1] * depth, A[2] - N[3 * a + 2] * depth];
+    const B2 = [Bq[0] - N[3 * b] * depth, Bq[1] - N[3 * b + 1] * depth, Bq[2] - N[3 * b + 2] * depth];
+    const ux = Bq[0] - A[0], uy = Bq[1] - A[1], uz = Bq[2] - A[2], vx = A2[0] - A[0], vy = A2[1] - A[1], vz = A2[2] - A[2];
+    let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx; const l = Math.hypot(nx, ny, nz) || 1; nx /= l; ny /= l; nz /= l;
+    const o = out.pos.length / 3;
+    out.pos.push(...A, ...Bq, ...B2, ...A2);
+    for (let q = 0; q < 4; q++) out.nrm.push(nx, ny, nz);
+    out.idx.push(o, o + 1, o + 2, o, o + 2, o + 3);
+  }
+  return out;
+}
+function toGeo(p, uvFn) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(p.pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(p.nrm, 3));
+  if (uvFn) { const uv = []; for (let i = 0; i < p.pos.length; i += 3) { const r = uvFn(p.pos[i], p.pos[i + 1], p.pos[i + 2]); uv.push(r[0], r[1]); } g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); }
+  g.setIndex(p.idx);
+  g.computeBoundingSphere(); g.computeBoundingBox();
+  return g;
+}
+
+/* =====================================================================
+   4. PANELISATION — exact cuts along panel seams, lamp outlines, glass
+   ===================================================================== */
+const W_SEAM = 0.0035;
+const TT = {};
+const term = (f) => (x, y, az) => { sdfBody(x, y, az, TT); return f(TT); };
+const gWSf = (T) => T.dWS - Math.max(T.dRoof, T.dSide, T.dBL);
+const gBLf = (T) => T.dBL - Math.max(T.dRoof, T.dSide, T.dWS);
+const gRoofF = (T) => T.dRoof - Math.max(T.dSide, T.dWS, T.dBL);
+function cutList() {
+  const uF = (x, az) => UMAP.front(x, az), uR = (x, az) => UMAP.rear(x, az);
+  return [
+    [term((T) => -T.well - T.f0), null],
+    [term((T) => T.dBot - Math.max(T.pd, T.dTop)), [-2.3, 2.3, 0, 0.45, 0, 1]],
+    [term((T) => T.fl - T.fc), [-2.0, 1.1, 0.9, 1.7, 0, 1]],
+    [term(gWSf), [-0.3, 1.1, 0.9, 1.7, 0, 1]],
+    [term((T) => gWSf(T) - 0.010), [-0.3, 1.1, 0.9, 1.7, 0, 1]],
+    [term(gBLf), [-1.95, -0.6, 0.9, 1.7, 0, 1]],
+    [term((T) => gBLf(T) - 0.009), [-1.95, -0.6, 0.9, 1.7, 0, 1]],
+    [term(gRoofF), [-1.4, 0.6, 1.25, 1.7, 0, 1]],
+    [(x, y) => sdPoly(x, y, POLY.dlo), [-1.5, 0.85, 0.95, 1.55, 0.4, 1]],
+    [(x, y) => sdPoly(x, y, POLY.dlo) - 0.022, [-1.5, 0.85, 0.95, 1.55, 0.4, 1]],
+    [(x) => x - XB1, [-0.3, 0.1, 0.98, 1.55, 0.4, 1]],
+    [(x) => x - XB2, [-0.3, 0.1, 0.98, 1.55, 0.4, 1]],
+    [(x) => x - XD1, [-1.2, -0.7, 1.0, 1.55, 0.4, 1]],
+    [(x) => x - XD2, [-1.2, -0.7, 1.0, 1.55, 0.4, 1]],
+    [(x, y) => x - (0.76 - 1.6 * (y - 1.025)), [-0.2, 1.05, 0.98, 1.56, 0.4, 1]],
+    [(x) => x + 1.0, [-1.2, -0.8, 1.0, 1.56, 0.4, 1]],
+    [(x, y, az) => sdPoly(uF(x, az), y, POLY.drl), [1.5, 2.2, 0.76, 0.95, 0, 1]],
+    [(x, y, az) => sdPoly(uF(x, az), y, POLY.head), [1.5, 2.2, 0.70, 0.95, 0, 1]],
+    [(x, y, az) => sdPoly(az, y, POLY.grilleUp) - 0.002, [1.8, 2.2, 0.58, 0.86, 0, 0.56]],
+    [(x, y, az) => sdPoly(az, y, POLY.grilleLow) - 0.002, [1.8, 2.2, 0.25, 0.5, 0, 0.7]],
+    [(x, y, az) => sdPoly(uF(x, az), y, POLY.intake) - 0.002, [1.5, 2.2, 0.28, 0.72, 0.45, 1]],
+    [(x, y, az) => sdPoly(uF(x, az), y, POLY.fang), [1.5, 2.2, 0.3, 0.75, 0.45, 1]],
+    [(x, y, az) => sdPoly(uR(x, az), y, POLY.tail), [-2.2, -1.6, 0.80, 1.1, 0.2, 1]],
+    [(x, y, az) => sdPoly(uR(x, az), y, POLY.tailLED), [-2.2, -1.6, 0.80, 1.08, 0, 1]],
+    [(x, y, az) => sdPoly(az, y, POLY.garnish), [-2.2, -1.9, 0.98, 1.07, 0, 0.5]],
+    [(x, y, az) => sdPoly(az, y, POLY.diffuser) - 0.002, [-2.2, -1.85, 0.2, 0.5, 0, 0.76]],
+    [(x, y) => y - 0.295, [SILL_X0, SILL_X1, 0.2, 0.36, 0.55, 1]],
+    [(x, y) => y - 0.30, [1.7, 2.2, 0.2, 0.36, 0, 1]],
+    [(x, y) => sdPoly(x, y, POLY.pocketF), [-0.1, 0.2, 0.85, 1.0, 0.6, 1]],
+    [(x, y) => sdPoly(x, y, POLY.pocketR), [-1.1, -0.8, 0.9, 1.05, 0.6, 1]],
+    [(x) => x - 0.93, [0.85, 1.0, 0.9, 1.1, 0, 0.8]],
+    [(x, y, az) => az - 0.76, [0.5, 0.95, 0.9, 1.1, 0.6, 0.9]],
+  ];
+}
+function seamList() {
+  return [
+    { g: (x, y, az) => az - B.zBon(x), box: [0.93, 2.16, 0.80, 1.05, 0.5, 0.95], side: 1 },
+    { g: (x, y, az) => y - yBF(UMAP.front(x, az)), box: [1.65, 2.16, 0.80, 0.97, 0, 0.95], side: -1, extra: (x, y, az) => az < B.zBon(x) + W_SEAM },
+    { g: (x) => x - 0.93, box: [0.85, 1.0, 0.9, 1.1, 0, 0.78], side: -1 },
+    { g: (x, y) => gBumpF(x, y), box: [1.45, 1.95, 0.5, 0.95, 0.5, 0.95], side: 1 },
+    { g: (x, y) => x - xDF(y), box: [0.7, 1.0, 0.19, 1.06, 0.6, 0.95], side: 1 },
+    { g: (x, y) => x - xB(y), box: [-0.25, 0.02, 0.19, 1.14, 0.6, 0.95], side: -1 },
+    { g: (x, y) => sdPoly(x, y, POLY.quarter), box: [-1.3, -0.8, 0.19, 1.16, 0.55, 0.95], side: -1 },
+    { g: (x, y) => gBumpR(x, y), box: [-2.0, -1.45, 0.5, 1.02, 0.5, 0.95], side: 1 },
+    { g: (x) => x + 1.80, box: [-1.9, -1.7, 1.1, 1.25, 0, 0.72], side: -1 },
+    // boot lid: deck edges run down to the lamps, then the lid drops between the lamps to below the plate
+    { g: (x, y, az) => az - 0.70, box: [-2.16, -1.75, 1.03, 1.25, 0.6, 0.8], side: 1 },
+    { g: (x, y, az) => az - 0.42, box: [-2.16, -1.95, 0.715, 1.0, 0.3, 0.55], side: 1 },
+    { g: (x, y) => y - 0.72, box: [-2.16, -1.95, 0.68, 0.76, 0, 0.42], side: -1 },
+    { g: (x, y) => y - 0.845, box: [-2.16, -1.88, 0.80, 0.9, 0.42, 1], side: -1 },
+    { g: (x, y) => y - 0.295, box: [-0.9, 0.93, 0.25, 0.34, 0.6, 0.95], side: 1 },
+  ];
+}
+const inBox = (x, y, az, b) => x >= b[0] && x <= b[1] && y >= b[2] && y <= b[3] && az >= b[4] && az <= b[5];
+function classify(x, y, az, T, SEAMS) {
+  if (-T.well - T.f0 > 0) return 'liner';
+  if (y < 0.45 && T.dBot - Math.max(T.pd, T.dTop) > 0) return 'under';
+  if (y > 0.9 && x > -2.0 && x < 1.1 && T.fl - T.fc > 0) {
+    if (x > -0.3) { const g = gWSf(T); if (g > 0) return g < 0.010 ? 'fritF' : 'windshield'; }
+    if (x < -0.6 && x > -1.95) { const g = gBLf(T); if (g > 0) return g < 0.009 ? 'fritR' : 'backlight'; }
+    if (y > 1.25 && x > -1.4 && x < 0.6 && gRoofF(T) > 0) return 'roof';
+    const inD = x > -1.5 && x < 0.85 && y > 0.95 && y < 1.55 && az > 0.4;
+    const m = inD ? sdPoly(x, y, POLY.dlo) : 1;
+    if (m < 0) {
+      if (x < XB1 && x > XB2) return 'bPillar';
+      if (x < XD1 && x > XD2) return 'frameR';
+      return x >= XB1 ? 'glassF' : x >= XD1 ? 'glassR' : 'glassQ';
+    }
+    if (m < 0.022) return x > XB2 ? 'frameF' : 'frameR';
+    if (x > 0.76 - 1.6 * (y - 1.025)) return 'aPillar';
+    if (x < -1.0) return 'quarter';
+    return 'shell';
+  }
+  if (x > 1.5) {
+    const u = UMAP.front(x, az);
+    if (y > 0.76 && y < 0.95 && sdPoly(u, y, POLY.drl) < 0) return 'drl';
+    if (y > 0.70 && y < 0.95 && sdPoly(u, y, POLY.head) < 0) return 'head';
+    if (x > 1.8 && y > 0.58 && y < 0.86 && az < 0.56 && sdPoly(az, y, POLY.grilleUp) < 0.002) return 'grille';
+    if (x > 1.8 && y > 0.25 && y < 0.5 && az < 0.7 && sdPoly(az, y, POLY.grilleLow) < 0.002) return 'grilleLow';
+    if (y > 0.3 && y < 0.75 && az > 0.45 && sdPoly(u, y, POLY.fang) < 0) return 'fang';
+    if (y > 0.28 && y < 0.72 && az > 0.45 && sdPoly(u, y, POLY.intake) < 0.002) return 'intake';
+  }
+  if (x < -1.6) {
+    const u = UMAP.rear(x, az);
+    if (y > 0.80 && y < 1.08 && sdPoly(u, y, POLY.tailLED) < 0) return 'tailLED';
+    if (y > 0.80 && y < 1.1 && az > 0.2 && sdPoly(u, y, POLY.tail) < 0) return 'tail';
+    if (x < -1.9 && y > 0.98 && y < 1.07 && az < 0.5 && sdPoly(az, y, POLY.garnish) < 0) return 'garnish';
+    if (x < -1.85 && y > 0.2 && y < 0.5 && az < 0.76 && sdPoly(az, y, POLY.diffuser) < 0.002) return 'diffuser';
+  }
+  for (const s of SEAMS) {
+    if (!inBox(x, y, az, s.box)) continue;
+    const v = s.side * s.g(x, y, az);
+    if (v > 0 && v < W_SEAM && (!s.extra || s.extra(x, y, az))) return 'seam';
+  }
+  if (az > 0.6 && x > -0.1 && x < 0.2 && y > 0.85 && y < 1.0 && sdPoly(x, y, POLY.pocketF) < 0) return 'pocketF';
+  if (az > 0.6 && x > -1.1 && x < -0.8 && y > 0.9 && y < 1.05 && sdPoly(x, y, POLY.pocketR) < 0) return 'pocketR';
+  if (az > 0.55 && y < 0.295 && y >= 0.2 && x > SILL_X0 && x < SILL_X1) return 'sill';
+  if (x > 1.7 && y < 0.30 && y >= 0.2) return 'lip';
+  if (x > 0.93 && az < B.zBon(x) && y > yBF(UMAP.front(x, az))) return 'bonnet';
+  if (x <= 0.93 && x > 0.5 && az < 0.76 && y > 0.95) return 'cowl';
+  if (x > 1.45 && y < 0.93 && gBumpF(x, y) > 0) return 'bumperF';
+  if (x > 1.8 && y < yBF(UMAP.front(x, az))) return 'bumperF';
+  if (x > 0.5 && x > xDF(y)) return 'fender';
+  if (x < -1.80 && y > 1.105 && az < 0.70) return 'boot';
+  if (x < -1.95 && y > 1.0 && y <= 1.105 && az < 0.70) return 'boot';
+  if (x < -1.95 && y > 0.72 && y <= 1.0 && az < 0.42) return 'boot';
+  if (x < -1.45 && y < 0.95 && gBumpR(x, y) > 0) return 'bumperR';
+  if (sdPoly(x, y, POLY.quarter) < 0) return 'quarter';
+  return x > xB(y) ? 'doorF' : 'doorR';
+}
+
+async function buildBodyGeometry(onProg) {
+  const h = LOW ? 0.021 : 0.017;
+  const raw = await surfaceNets((x, y, z) => sdfBody(x, y, z), [-2.18, 0.14, -2 * h, 2.18, 1.59, 0.96], h, (p) => onProg(p * 0.78, 'Sculpting the body surface'), 4);
+  const M = new CutMesh(raw.pos, raw.nrm, raw.idx);
+  // winding sanity check against the field gradient
+  let agree = 0;
+  for (let k = 0; k < Math.min(M.t.length, 9000); k += 9) {
+    const a = 3 * M.t[k], b = 3 * M.t[k + 1], c = 3 * M.t[k + 2], P = M.p;
+    const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    agree += Math.sign(nx * M.n[a] + ny * M.n[a + 1] + nz * M.n[a + 2]);
+  }
+  if (agree < 0) for (let k = 0; k < M.t.length; k += 3) { const t = M.t[k + 1]; M.t[k + 1] = M.t[k + 2]; M.t[k + 2] = t; }
+  // symmetry plane: keep the right half (z >= 0), it is mirrored later
+  M.cut((x, y, az, nx, ny, nz, z) => z, null);
+  { const keep = []; for (let k = 0; k < M.t.length; k += 3) { const c = M.centroid(k); if (c[2] >= 0) keep.push(M.t[k], M.t[k + 1], M.t[k + 2]); } M.t = keep; }
+  onProg(0.8, 'Cutting panels, glass and lamps');
+  await yieldUI();
+  const cuts = cutList();
+  for (let i = 0; i < cuts.length; i++) { M.cut(cuts[i][0], cuts[i][1]); if (i % 6 === 5) { onProg(0.8 + (0.1 * i) / cuts.length); await yieldUI(); } }
+  const SEAMS = seamList();
+  for (const s of SEAMS) { M.cut(s.g, s.box); M.cut((x, y, az) => s.side * s.g(x, y, az) - W_SEAM, s.box); }
+  onProg(0.92, 'Classifying components');
+  await yieldUI();
+  const groups = {}, T = {};
+  for (let k = 0; k < M.t.length; k += 3) {
+    const c = M.centroid(k);
+    sdfBody(c[0], c[1], c[2], T);
+    const key = classify(c[0], c[1], Math.abs(c[2]), T, SEAMS);
+    (groups[key] || (groups[key] = [])).push(k);
+  }
+  const patches = {};
+  for (const key in groups) patches[key] = M.patch(groups[key]);
+  onProg(1);
+  return patches;
+}
+
+/* =====================================================================
+   5. PROCEDURAL TEXTURES & MATERIALS
+   ===================================================================== */
+const TEX = {};
+function canvasTex(w, h, draw, { color = true, repeat = false, aniso = 4 } = {}) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+  t.anisotropy = aniso;
+  if (repeat) t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+function makeCarTextures() {
+  TEX.hex = canvasTex(256, 222, (g, w, h) => {
+    g.fillStyle = '#030304'; g.fillRect(0, 0, w, h);
+    const r = w / (4 * Math.sqrt(3)), dx = Math.sqrt(3) * r, dy = 1.5 * r;
+    for (let row = -1; row <= 5; row++) for (let col = -1; col <= 5; col++) {
+      const cx = col * dx + (row & 1 ? dx / 2 : 0), cy = row * dy;
+      g.beginPath();
+      for (let k = 0; k < 6; k++) { const a = (60 * k - 30) * DEG; g.lineTo(cx + Math.cos(a) * r * 0.86, cy + Math.sin(a) * r * 0.86); }
+      g.closePath();
+      const gr = g.createRadialGradient(cx, cy - r * 0.3, 1, cx, cy, r); gr.addColorStop(0, '#000'); gr.addColorStop(1, '#16181b');
+      g.fillStyle = gr; g.fill(); g.lineWidth = 3; g.strokeStyle = '#3a3e44'; g.stroke();
+    }
+  }, { repeat: true });
+  TEX.slat = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#050506'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 4; i++) { const y = i * 64 + 18; const gr = g.createLinearGradient(0, y, 0, y + 22); gr.addColorStop(0, '#34373c'); gr.addColorStop(1, '#0d0e10'); g.fillStyle = gr; g.fillRect(0, y, w, 22); }
+    g.strokeStyle = '#1d1f22'; g.lineWidth = 2;
+    for (let i = -8; i < 16; i++) { g.beginPath(); g.moveTo(i * 32, 0); g.lineTo(i * 32 + 128, h); g.stroke(); g.beginPath(); g.moveTo(i * 32 + 128, 0); g.lineTo(i * 32, h); g.stroke(); }
+  }, { repeat: true });
+  TEX.tyre = canvasTex(2048, 1024, (g, w, h) => {
+    g.fillStyle = '#18181a'; g.fillRect(0, 0, w, h);
+    const v2y = (v) => (1 - v) * h;
+    const t0 = v2y(0.724), t1 = v2y(0.276);
+    g.fillStyle = '#1d1d20'; g.fillRect(0, t0, w, t1 - t0);
+    g.strokeStyle = '#060606'; g.lineWidth = 5;
+    for (let i = 0; i < 132; i++) { const x = (i / 132) * w; g.beginPath(); g.moveTo(x, t0 + 4); g.lineTo(x + 10, t0 + (t1 - t0) * 0.42); g.stroke(); g.beginPath(); g.moveTo(x + 7, t0 + (t1 - t0) * 0.58); g.lineTo(x + 17, t1 - 4); g.stroke(); }
+    g.fillStyle = '#4a4a4e'; g.font = '700 62px Manrope, Arial, sans-serif'; g.textBaseline = 'middle';
+    const ty = v2y(0.897);
+    for (const ox of [0.08, 0.58]) { g.save(); g.translate(ox * w, ty); g.scale(1, -1); g.fillText('195/65 R15', 0, 0); g.restore(); }
+  }, { aniso: 8 });
+  TEX.plate = canvasTex(1024, 248, (g, w, h) => {
+    g.fillStyle = '#0c0c0e'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#d8d8d8'; g.lineWidth = 6; g.strokeRect(14, 14, w - 28, h - 28);
+    g.fillStyle = '#f4f4f4'; g.font = '700 104px Manrope, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('MARUTI SUZUKI', w / 2, h / 2 + 4);
+  }, { aniso: 8 });
+  TEX.screen = canvasTex(640, 368, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#0c1a33'); gr.addColorStop(1, '#05070e'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(120,170,255,.25)'; g.lineWidth = 2;
+    for (let i = 0; i < 9; i++) { g.beginPath(); g.moveTo(250 + i * 44, 40); g.lineTo(210 + i * 50, h - 30); g.stroke(); }
+    g.strokeStyle = '#f2992e'; g.lineWidth = 6; g.beginPath(); g.moveTo(300, h - 40); g.bezierCurveTo(360, 220, 430, 220, 470, 120); g.lineTo(560, 70); g.stroke();
+    g.fillStyle = '#f3ecdf'; g.font = '700 46px Sora, Arial, sans-serif'; g.fillText('AAROH', 34, 82);
+    g.fillStyle = 'rgba(243,236,223,.55)'; g.font = '500 22px Manrope, Arial, sans-serif'; g.fillText('Ride service', 36, 118);
+    for (let i = 0; i < 3; i++) { g.fillStyle = 'rgba(243,236,223,.08)'; g.fillRect(34 + i * 70, 250, 56, 56); g.strokeStyle = 'rgba(243,236,223,.35)'; g.lineWidth = 2; g.strokeRect(34 + i * 70, 250, 56, 56); }
+  });
+  TEX.fare = canvasTex(256, 160, (g, w, h) => {
+    g.fillStyle = '#070a12'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#f2992e'; g.font = '700 30px Rajdhani, Arial, sans-serif'; g.fillText('FARE', 20, 44);
+    g.strokeStyle = 'rgba(243,236,223,.5)'; g.lineWidth = 3; g.beginPath(); g.moveTo(20, 80); g.lineTo(236, 80); g.stroke();
+    g.fillStyle = 'rgba(243,236,223,.35)'; g.fillRect(20, 100, 150, 14); g.fillRect(20, 124, 96, 14);
+  });
+  TEX.cells = canvasTex(1024, 704, (g, w, h) => {
+    g.fillStyle = '#030611'; g.fillRect(0, 0, w, h);
+    const cols = 8, rows = 4, pad = 18, cw = (w - pad * 2) / cols, ch = (h - pad * 2) / rows;
+    for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+      const x = pad + i * cw + 6, y = pad + j * ch + 6;
+      g.fillStyle = 'rgba(40,70,140,.35)'; g.fillRect(x, y, cw - 12, ch - 12);
+      g.strokeStyle = 'rgba(196,128,76,.95)'; g.lineWidth = 4; g.strokeRect(x, y, cw - 12, ch - 12);
+      g.strokeStyle = 'rgba(243,236,223,.18)'; g.lineWidth = 2;
+      for (let k = 1; k < 6; k++) { g.beginPath(); g.moveTo(x + (k * (cw - 12)) / 6, y + 6); g.lineTo(x + (k * (cw - 12)) / 6, y + ch - 18); g.stroke(); }
+    }
+    g.strokeStyle = '#f2992e'; g.lineWidth = 7; g.beginPath(); g.moveTo(pad, h / 2); g.lineTo(w - pad, h / 2); g.stroke();
+  });
+}
+const SCAN = { uScanX: { value: 99 }, uScanGlow: { value: 0 } };
+function scanPatch(mat, extra) {
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uScanX = SCAN.uScanX; sh.uniforms.uScanGlow = SCAN.uScanGlow;
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vScanW;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvScanW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uScanX;\nuniform float uScanGlow;\nvarying vec3 vScanW;')
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (vScanW.x > uScanX) discard;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vec3(1.0, 0.56, 0.18) * uScanGlow * (1.0 - smoothstep(0.0, 0.05, abs(vScanW.x - uScanX)));');
+    if (extra) extra(sh);
+  };
+  mat.customProgramCacheKey = () => (extra ? 'scan-glass' : 'scan');
+  return mat;
+}
+const glassAlpha = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>', 'float aaSpec = dot(reflectedLight.indirectSpecular + reflectedLight.directSpecular, vec3(0.299, 0.587, 0.114));\ndiffuseColor.a = clamp(diffuseColor.a + aaSpec * 0.85, 0.0, 1.0);\n#include <opaque_fragment>'); };
+const MAT = {};
+function makeMaterials() {
+  const P = (o) => scanPatch(new THREE.MeshPhysicalMaterial(o));
+  const S = (o) => scanPatch(new THREE.MeshStandardMaterial(o));
+  MAT.paint = P({ color: 0xd9dadb, metalness: 0.42, roughness: 0.34, clearcoat: 1, clearcoatRoughness: 0.035 });
+  MAT.gloss = P({ color: 0x060709, metalness: 0.15, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.04 });
+  MAT.matte = S({ color: 0x0f1012, metalness: 0, roughness: 0.82 });
+  MAT.seam = S({ color: 0x020203, roughness: 1 });
+  MAT.inner = S({ color: 0x17181c, roughness: 0.92, side: THREE.BackSide });
+  MAT.chrome = S({ color: 0xffffff, metalness: 1, roughness: 0.07 });
+  MAT.darkChrome = S({ color: 0x101114, metalness: 0.6, roughness: 0.22, envMapIntensity: 0.45, side: THREE.DoubleSide }); // dark lamp housings read black on the white studio
+  MAT.grille = P({ color: 0xffffff, map: TEX.hex, metalness: 0.3, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.08 });
+  MAT.grilleLow = S({ color: 0xffffff, map: TEX.slat, metalness: 0.1, roughness: 0.62 });
+  MAT.glass = scanPatch(new THREE.MeshPhysicalMaterial({ color: 0x03060a, metalness: 0, roughness: 0.025, transparent: true, opacity: 0.84, depthWrite: false, envMapIntensity: 0.5, clearcoat: 1, clearcoatRoughness: 0.02 }), glassAlpha);
+  MAT.lens = scanPatch(new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.02, transparent: true, opacity: 0.06, depthWrite: false, envMapIntensity: 1.6 }), glassAlpha);
+  MAT.drl = S({ color: 0x000000, emissive: 0xf2f5ff, emissiveIntensity: 2.6, roughness: 0.4 });
+  MAT.tailLens = P({ color: 0x6a0008, metalness: 0, roughness: 0.06, transparent: true, opacity: 0.86, clearcoat: 1, emissive: 0x500000, emissiveIntensity: 0.4 });
+  MAT.tailLED = S({ color: 0x000000, emissive: 0xff2214, emissiveIntensity: 2.2 });
+  MAT.tailHousing = S({ color: 0x1a0406, metalness: 0.5, roughness: 0.35, side: THREE.DoubleSide });
+  MAT.rubber = S({ color: 0xffffff, map: TEX.tyre, bumpMap: TEX.tyre, bumpScale: 2.0, roughness: 0.9 });
+  MAT.rimFace = S({ color: 0xe6e8eb, metalness: 0.72, roughness: 0.28 });
+  MAT.rimBlack = P({ color: 0x0b0b0d, metalness: 0.5, roughness: 0.32, clearcoat: 0.6 });
+  MAT.barrel = S({ color: 0x55585e, metalness: 0.95, roughness: 0.38, side: THREE.DoubleSide });
+  MAT.disc = S({ color: 0x7a7c80, metalness: 0.9, roughness: 0.5 });
+  MAT.caliper = S({ color: 0x25272b, metalness: 0.6, roughness: 0.4 });
+  MAT.seat = S({ color: 0x9a9fa7, roughness: 0.62 });
+  MAT.seatDark = S({ color: 0x2b2d32, roughness: 0.72 });
+  MAT.dash = S({ color: 0x1c1e22, roughness: 0.74 });
+  MAT.trim = S({ color: 0x8f959d, metalness: 0.85, roughness: 0.32 });
+  MAT.screen = S({ color: 0x030405, emissive: 0xffffff, emissiveMap: TEX.screen, emissiveIntensity: 0.85, roughness: 0.12 });
+  MAT.fare = S({ color: 0x030405, emissive: 0xffffff, emissiveMap: TEX.fare, emissiveIntensity: 0.75, roughness: 0.12 });
+  MAT.carpet = S({ color: 0x141518, roughness: 0.96 });
+  MAT.mirror = S({ color: 0x9aa3ad, metalness: 1, roughness: 0.03 });
+  MAT.plate = S({ color: 0xffffff, map: TEX.plate, roughness: 0.45, metalness: 0.1 });
+  MAT.amber = S({ color: 0x000000, emissive: 0xffa040, emissiveIntensity: 0.25 });
+  MAT.port = S({ color: 0x0b0b0c, roughness: 0.55, metalness: 0.1 });
+  MAT.portRing = S({ color: 0x000000, emissive: 0xf2992e, emissiveIntensity: 0 });
+  MAT.pocket = S({ color: 0x050506, roughness: 1, side: THREE.BackSide });
+  // schematic layer (never scan-clipped; fades with x-ray / explode / isolate)
+  MAT.battery = new THREE.MeshStandardMaterial({ color: 0x0a1328, emissive: 0xffffff, emissiveMap: TEX.cells, emissiveIntensity: 1.25, metalness: 0.2, roughness: 0.5, transparent: true, opacity: 0, depthWrite: false });
+  MAT.motor = new THREE.MeshStandardMaterial({ color: 0x1d2a44, emissive: 0xc4804c, emissiveIntensity: 0.45, metalness: 0.6, roughness: 0.35, transparent: true, opacity: 0, depthWrite: false });
+  MAT.volume = new THREE.MeshBasicMaterial({ color: 0xf2992e, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+  MAT.volumeEdge = new THREE.LineBasicMaterial({ color: 0xf6c27a, transparent: true, opacity: 0, depthWrite: false });
+  MAT.ghost = new THREE.ShaderMaterial({
+    uniforms: { uScanX: SCAN.uScanX, uColor: { value: new THREE.Color(0x24406e) }, uOpacity: { value: 0.5 }, uMode: { value: 0 } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vW;
+      void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uOpacity; uniform float uMode; uniform float uScanX; varying vec3 vN; varying vec3 vV; varying vec3 vW;
+      void main(){ if (uMode > 0.5 && vW.x < uScanX) discard; float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2); gl_FragColor = vec4(uColor * (0.18 + 1.2 * f), uOpacity * (0.05 + 0.95 * f)); }`,
+    transparent: true, depthWrite: false, blending: THREE.NormalBlending, // normal blending: additive ghosts vanish on the white studio
+  });
+  MAT.highlight = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(0xf2992e) } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `uniform float uTime; uniform vec3 uColor; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0); float p = 0.55 + 0.45 * sin(uTime * 3.2); gl_FragColor = vec4(uColor * (0.25 + 1.6 * f) * p, 0.25 + 0.6 * f); }`,
+    transparent: true, depthWrite: false, blending: THREE.NormalBlending, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+  });
+}
+
+/* =====================================================================
+   6. CAR ASSEMBLY — named components, explode vectors, picking data
+   ===================================================================== */
+const CAR = { root: null, comps: {}, pick: [], explode: [], schematic: [], lights: {}, flap: null, flapRing: null, frontWheels: [] };
+const INFO = {
+  headlamps: { name: 'Headlamps', tag: 'Exterior · lighting', desc: 'Slim wrap-around units. The upper light strip runs across the top of the grille, and vertical light signatures frame the corner intakes.', specs: [['Design source', 'AAROH front and 3/4 renders']], src: 'The deck gives no lamp technology or output figures, so none are shown.' },
+  grille: { name: 'Grille & Suzuki emblem', tag: 'Exterior · front', desc: 'Gloss-black hexagonal mesh between the headlamps, carrying the Suzuki “S”. Behind it, the 790 mm front overhang holds the motor and the crash zone.', specs: [['Front overhang', '790 mm · motor, crash zone'], ['Drag target', 'Cd 0.25']], src: 'Mesh pattern approximated from the renders.' },
+  bumperF: { name: 'Front bumper', tag: 'Exterior · front', desc: 'Lower grille, black corner intakes and vertical light signatures. The plate reads MARUTI SUZUKI, as in the 3/4 reference render.', specs: [['Overall width', '1,780 mm'], ['Front overhang', '790 mm']], src: 'Surfaces follow the front and 3/4 renders.' },
+  bonnet: { name: 'Bonnet', tag: 'Exterior · front', desc: 'Creased bonnet over the frunk and the motor bay.', specs: [['Frunk', '30 L'], ['Motor', '110 kW peak · 230 Nm']], src: 'Crease placement approximated from the 3/4 render.' },
+  fenders: { name: 'Front wings', tag: 'Exterior · body', desc: 'Wrap the front wheel arches and carry the headlamp tails and the shoulder line.', specs: [['Tyres', '195/65 R15'], ['Wheelbase', '2,650 mm']], src: 'Arch radius sized around the 195/65 R15 tyre.' },
+  doors: { name: 'Doors (×4)', tag: 'Exterior · access', desc: 'Four doors with pull handles on the shoulder line and a gloss-black window surround.', specs: [['Seats', '5 (2 + 3)'], ['Seat height', '605 mm'], ['Rear shoulder room', '1,380 mm']], src: 'Door cut lines read from the side-view drawing.' },
+  mirrors: { name: 'Door mirrors', tag: 'Exterior · body', desc: 'Body-colour caps on gloss-black bases at the front of the window line.', specs: [['Width (excl. mirrors)', '1,780 mm']], src: 'Width with mirrors isn\'t in the deck; mirror size is approximated.' },
+  glass: { name: 'Glasshouse', tag: 'Exterior · greenhouse', desc: 'Raked windscreen, fastback rear screen and black-framed side glass, with wipers parked at the cowl.', specs: [['Overall height', '1,550 mm'], ['Drag target', 'Cd 0.25']], src: 'Rake angles read from the side-view drawing.' },
+  roof: { name: 'Roof & fin antenna', tag: 'Exterior · greenhouse', desc: 'Body-colour roof that peaks at the 1,550 mm overall height, with a fin antenna at the rear.', specs: [['Overall height', '1,550 mm']], src: 'Antenna position approximated from the side render.' },
+  boot: { name: 'Boot lid', tag: 'Exterior · rear', desc: 'Short deck with an integrated ducktail lip over a locked boot.', specs: [['Boot', '400 L, locked'], ['Rear overhang', '810 mm']], src: 'Deck height read from the side-view drawing; the rear face is approximated.' },
+  tailLamps: { name: 'Tail lamps', tag: 'Exterior · lighting', desc: 'Wrap-around blades under the boot lip, joined by a gloss-black garnish.', specs: [], src: 'The rear face isn\'t shown in the references; lamp shape is approximated from the side render.' },
+  bumperR: { name: 'Rear bumper', tag: 'Exterior · rear', desc: 'Wraps the rear overhang and ends in a black lower diffuser.', specs: [['Rear overhang', '810 mm']], src: 'Approximated: the rear face isn\'t shown in the references.' },
+  wheels: { name: 'Wheels & tyres', tag: 'Chassis', desc: 'Dual-tone twin-spoke 15-inch alloys on 195/65 R15 tyres, each rated for 690 kg.', specs: [['Tyres', '195/65 R15'], ['Tyre diameter', '≈ 634 mm (computed)'], ['Load rating', '690 kg each · 2,760 kg vs 2,030 kg gross'], ['Turning radius', '5.0 m']], src: 'Spoke design follows the renders. The renders draw larger wheels than the 195/65 R15 spec; the model follows the spec.' },
+  charge: { name: 'CCS2 charging port', tag: 'Powertrain · charging', desc: 'Behind the flap on the left rear quarter.', specs: [['AC', '11 kW on-board charger'], ['DC', 'up to 120 kW · 10→80% in ~24 min'], ['Home charger', '7.4 kW in the box · 10→100% in 6.9 h'], ['Payment', 'UPI plug-and-charge']], src: 'Flap position read from the side-view drawing.' },
+  body: { name: 'Body structure', tag: 'Structure', desc: 'Pillars, sills, rear quarters and floor that carry the panels.', specs: [['L × W × H', '4,250 × 1,780 × 1,550 mm'], ['Kerb / gross', '1,580 / 2,030 kg'], ['Payload', '450 kg'], ['Clearance', '180 mm (145 mm loaded)']], src: 'Outer surfaces only; inner structure isn\'t documented.' },
+  cabin: { name: 'Cabin', tag: 'Interior', desc: 'Right-hand drive, a 12.3-inch central screen and a three-across rear bench, laid out from the cabin photos.', specs: [['Screen', '12.3-inch'], ['Seats', '5 (2 + 3) · wipe-clean'], ['Climate', 'Heat-pump AC for 45–48 °C · rear vents · cooled driver seat'], ['Safety', '6 airbags · Level 2 ADAS']], src: 'Interior geometry is a simplified approximation.' },
+  battery: { name: 'Battery pack (schematic)', tag: 'Powertrain · schematic', desc: 'Sodium-ion pack under the floor, inside the wheelbase.', specs: [['Capacity', '55 kWh (51 kWh usable)'], ['Voltage', '~400 V'], ['Cooling', 'liquid-cooled · IP67 sealed'], ['Pack weight', '~365 kg'], ['Warranty', '8 years · up to 5 lakh km']], src: 'Schematic block placed from the package layout, not engineering geometry.' },
+  motor: { name: 'Motor & gearbox (schematic)', tag: 'Powertrain · schematic', desc: 'Front-wheel-drive unit in the 790 mm front zone.', specs: [['Motor', '110 kW peak · 60 kW continuous · 230 Nm'], ['Gearbox', 'single-speed ~9:1'], ['Regeneration', 'up to 65 kW'], ['0–100 km/h', '~9 s']], src: 'Schematic placement, not engineering geometry.' },
+  bootVol: { name: 'Boot volume (schematic)', tag: 'Package', desc: 'A 0.8 × 0.5 × 1.0 m block: the stated 400 litres.', specs: [['Boot', '400 L']], src: 'Volume block, not the exact boot shape.' },
+  frunkVol: { name: 'Frunk volume (schematic)', tag: 'Package', desc: 'A 0.40 × 0.18 × 0.42 m block: the stated 30 litres.', specs: [['Frunk', '30 L']], src: 'Volume block, not the exact frunk shape.' },
+};
+const CHIP_ORDER = ['headlamps', 'grille', 'bumperF', 'bonnet', 'doors', 'mirrors', 'glass', 'roof', 'boot', 'tailLamps', 'bumperR', 'wheels', 'charge', 'cabin', 'battery', 'motor'];
+const CHIP_LABEL = { headlamps: 'Headlamps', grille: 'Grille & emblem', bumperF: 'Front bumper', bonnet: 'Bonnet', doors: 'Doors', mirrors: 'Mirrors', glass: 'Glasshouse', roof: 'Roof', boot: 'Boot lid', tailLamps: 'Tail lamps', bumperR: 'Rear bumper', wheels: 'Wheels & tyres', charge: 'Charging port', cabin: 'Cabin', battery: 'Battery (schematic)', motor: 'Motor (schematic)' };
+
+function addPart(obj, comp, ex, delay = 0, opts = {}) {
+  obj.userData.comp = comp;
+  CAR.root.add(obj);
+  obj.traverse((o) => { if (o.isMesh) { o.userData.comp = comp; if (!opts.noShadow) { o.castShadow = true; o.receiveShadow = !opts.noReceive; } if (!opts.noPick) CAR.pick.push(o); (CAR.comps[comp] || (CAR.comps[comp] = [])).push(o); } });
+  if (ex) CAR.explode.push({ obj, base: obj.position.clone(), dir: new THREE.Vector3(...ex), delay });
+  return obj;
+}
+const PARTS = {
+  bonnet: ['paint', 'bonnet', 0, [0.35, 0.95, 0], 0.18, 1],
+  roof: ['paint', 'roof', 0, [0, 1.25, 0], 0.3, 1],
+  windshield: ['glass', 'glass', 0, [0.45, 1.0, 0], 0.24, 0],
+  fritF: ['gloss', 'glass', 0, [0.45, 1.0, 0], 0.24, 0],
+  backlight: ['glass', 'glass', 0, [-0.45, 1.0, 0], 0.24, 0],
+  fritR: ['gloss', 'glass', 0, [-0.45, 1.0, 0], 0.24, 0],
+  boot: ['paint', 'boot', 0, [-0.4, 0.95, 0], 0.18, 1],
+  garnish: ['gloss', 'boot', 0, [-0.4, 0.95, 0], 0.18, 0],
+  bumperF: ['paint', 'bumperF', 0, [0.75, 0.12, 0], 0.06, 1],
+  grille: ['grille', 'grille', 0, [0.95, 0.12, 0], 0.06, 0],
+  grilleLow: ['grilleLow', 'bumperF', 0, [0.75, 0.12, 0], 0.06, 0],
+  intake: ['grilleLow', 'bumperF', 0, [0.75, 0.12, 0], 0.06, 0],
+  lip: ['matte', 'bumperF', 0, [0.75, 0.12, 0], 0.06, 0],
+  bumperR: ['paint', 'bumperR', 0, [-0.75, 0.12, 0], 0.06, 1],
+  diffuser: ['matte', 'bumperR', 0, [-0.75, 0.12, 0], 0.06, 0],
+  fender: ['paint', 'fenders', 1, [0.15, 0.55, 0.45], 0.12, 1],
+  doorF: ['paint', 'doors', 1, [0.15, 0.55, 0.8], 0.1, 1],
+  doorR: ['paint', 'doors', 1, [-0.1, 0.55, 0.8], 0.1, 1],
+  pocketF: ['pocket', 'doors', 1, [0.15, 0.55, 0.8], 0.1, 0],
+  pocketR: ['pocket', 'doors', 1, [-0.1, 0.55, 0.8], 0.1, 0],
+  glassF: ['glass', 'doors', 1, [0.15, 0.55, 0.8], 0.1, 0],
+  glassR: ['glass', 'doors', 1, [-0.1, 0.55, 0.8], 0.1, 0],
+  glassQ: ['glass', 'doors', 1, [-0.1, 0.55, 0.8], 0.1, 0],
+  frameF: ['gloss', 'doors', 1, [0.15, 0.55, 0.8], 0.1, 0],
+  frameR: ['gloss', 'doors', 1, [-0.1, 0.55, 0.8], 0.1, 0],
+  quarter: ['paint', 'body', 1, [0, 0.55, 0], 0.34, 1],
+  shell: ['paint', 'body', 1, [0, 0.55, 0], 0.34, 1],
+  aPillar: ['gloss', 'body', 1, [0, 0.55, 0], 0.34, 0],
+  bPillar: ['gloss', 'body', 1, [0, 0.55, 0], 0.34, 0],
+  sill: ['matte', 'body', 1, [0, 0.55, 0], 0.34, 0],
+  cowl: ['matte', 'body', 0, [0, 0.55, 0], 0.34, 0],
+  liner: ['matte', 'body', 1, [0, 0.55, 0], 0.34, 0],
+  under: ['matte', 'body', 0, null, 0, 0],
+};
+const UV_GRILLE = (x, y, z) => [z / 0.08, y / 0.0693];
+const UV_SLAT = (x, y, z) => [z / 0.07, y / 0.07];
+
+function buildBodyParts(patches) {
+  const sideSign = (dir, s) => (dir ? [dir[0], dir[1], dir[2] * s] : null);
+  for (const key in PARTS) {
+    const p = patches[key]; if (!p || !p.idx.length) continue;
+    const [matKey, comp, sided, ex, delay, inner] = PARTS[key];
+    let src = p;
+    if (matKey === 'glass') src = offsetPatch(p, -0.0035);
+    const uv = key === 'grille' ? UV_GRILLE : key === 'grilleLow' || key === 'intake' ? UV_SLAT : null;
+    const make = (patch, s) => {
+      const geo = toGeo(patch, uv);
+      const mesh = new THREE.Mesh(geo, MAT[matKey]);
+      mesh.name = `${key}${sided ? (s > 0 ? '_R' : '_L') : ''}`;
+      if (inner) { const back = new THREE.Mesh(geo, MAT.inner); back.userData.noPick = true; back.raycast = () => {}; mesh.add(back); }
+      if (matKey === 'glass') mesh.renderOrder = 2;
+      addPart(mesh, comp, sideSign(ex, s), delay, { noShadow: matKey === 'glass' });
+      return mesh;
+    };
+    if (sided) { make(src, 1); if (key === 'quarter') CAR._leftQuarterSrc = mirrorZ(src); else make(mirrorZ(src), -1); }
+    else make(mergePatches([src, mirrorZ(src)]), 1);
+  }
+  if (patches.seam) {
+    const s = offsetPatch(patches.seam, -0.0015);
+    const seam = new THREE.Mesh(toGeo(mergePatches([s, mirrorZ(s)])), MAT.seam);
+    seam.name = 'panelGaps'; seam.raycast = () => {};
+    CAR.root.add(seam); CAR.seam = seam;
+    (CAR.comps.body || (CAR.comps.body = [])).push(seam);
+  }
+  // headlamp assemblies (lens + housing + light guide + walls)
+  if (patches.head) {
+    const union = mergePatches([patches.head, patches.drl]);
+    const build = (s) => {
+      const f = s > 0 ? (q) => q : mirrorZ;
+      const g = new THREE.Group(); g.name = s > 0 ? 'headlamp_R' : 'headlamp_L';
+      g.add(new THREE.Mesh(toGeo(f(offsetPatch(union, 0.0018))), MAT.lens));
+      g.add(new THREE.Mesh(toGeo(f(offsetPatch(patches.head, -0.026))), MAT.darkChrome));
+      g.add(new THREE.Mesh(toGeo(f(boundaryWalls(union, 0.026))), MAT.darkChrome));
+      if (patches.drl) { const d = new THREE.Mesh(toGeo(f(offsetPatch(patches.drl, -0.002))), MAT.drl); g.add(d); }
+      for (const [az, y] of [[0.60, 0.800], [0.75, 0.808]]) {
+        const x = surfX(1, az, y), n = bodyNormal(x, y, az);
+        const pj = new THREE.Group();
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.019, 0.0035, 10, 36), MAT.chrome);
+        const lensD = new THREE.Mesh(new THREE.CircleGeometry(0.017, 32), scanPatch(MAT.drl.clone()));
+        lensD.material.emissiveIntensity = 0.6; lensD.position.z = -0.004;
+        pj.add(ring, lensD);
+        pj.position.set(x - n[0] * 0.014, y - n[1] * 0.014, (az - n[2] * 0.014) * s);
+        pj.lookAt(pj.position.x + n[0], pj.position.y + n[1], pj.position.z + n[2] * s);
+        g.add(pj);
+        CAR.lights.projectors = CAR.lights.projectors || []; CAR.lights.projectors.push(lensD.material);
+      }
+      g.children.forEach((m) => { if (m.isMesh) m.renderOrder = 3; });
+      addPart(g, 'headlamps', [0.9, 0.2, 0.15 * s], 0.06, { noReceive: true });
+    };
+    build(1); build(-1);
+  }
+  if (patches.fang) {
+    const fp = offsetPatch(patches.fang, 0.0012);
+    addPart(new THREE.Mesh(toGeo(mergePatches([fp, mirrorZ(fp)])), MAT.drl), 'headlamps', [0.75, 0.12, 0], 0.06, { noShadow: true });
+  }
+  if (patches.tail) {
+    const union = mergePatches([patches.tail, patches.tailLED]);
+    const build = (s) => {
+      const f = s > 0 ? (q) => q : mirrorZ;
+      const g = new THREE.Group(); g.name = s > 0 ? 'taillamp_R' : 'taillamp_L';
+      g.add(new THREE.Mesh(toGeo(f(offsetPatch(patches.tail, -0.02))), MAT.tailHousing));
+      g.add(new THREE.Mesh(toGeo(f(boundaryWalls(union, 0.02))), MAT.tailHousing));
+      if (patches.tailLED) g.add(new THREE.Mesh(toGeo(f(offsetPatch(patches.tailLED, -0.002))), MAT.tailLED));
+      const lens = new THREE.Mesh(toGeo(f(offsetPatch(union, 0.0015))), MAT.tailLens); lens.renderOrder = 3; g.add(lens);
+      addPart(g, 'tailLamps', [-0.3, 0.55, 0.3 * s], 0.34, { noReceive: true });
+    };
+    build(1); build(-1);
+  }
+  if (CAR._leftQuarterSrc) buildChargeFlap(CAR._leftQuarterSrc);
+}
+
+function buildChargeFlap(src) {
+  const M = new CutMesh(src.pos.slice(), src.nrm.slice(), src.idx.slice());
+  const g = (x, y) => sdPoly(x, y, POLY.flap), box = [-1.6, -1.2, 0.85, 1.12, 0.6, 1];
+  M.cut(g, box); M.cut((x, y) => g(x, y) + W_SEAM, box);
+  const flap = [], gap = [], rest = [];
+  for (let k = 0; k < M.t.length; k += 3) {
+    const c = M.centroid(k), m = inBox(c[0], c[1], Math.abs(c[2]), box) ? g(c[0], c[1]) : 1;
+    (m < -W_SEAM ? flap : m < 0 ? gap : rest).push(k);
+  }
+  const quarter = new THREE.Mesh(toGeo(M.patch(rest)), MAT.paint);
+  quarter.name = 'quarter_L';
+  const back = new THREE.Mesh(quarter.geometry, MAT.inner); back.raycast = () => {}; quarter.add(back);
+  addPart(quarter, 'body', [0, 0.55, 0], 0.34);
+  const gapMesh = new THREE.Mesh(toGeo(offsetPatch(M.patch(gap), -0.0015)), MAT.seam); gapMesh.raycast = () => {};
+  quarter.add(gapMesh);
+  // flap on a hinge at its front edge
+  const hx = -1.395 + 0.082, hy = 0.985, hz = -bodyZ(hx, hy);
+  const flapGeo = toGeo(M.patch(flap)); flapGeo.translate(-hx, -hy, -hz);
+  const flapMesh = new THREE.Mesh(flapGeo, MAT.paint); flapMesh.name = 'chargeFlap';
+  const fb = new THREE.Mesh(flapGeo, MAT.inner); fb.raycast = () => {}; flapMesh.add(fb);
+  const pivot = new THREE.Group(); pivot.position.set(hx, hy, hz); pivot.add(flapMesh);
+  // pocket and CCS2 inlet
+  const cx = -1.395, cy = 0.985, cz = -bodyZ(cx, cy), n = bodyNormal(cx, cy, -cz); n[2] = -n[2];
+  const port = new THREE.Group(); port.name = 'ccs2Port';
+  const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.155, 0.06), MAT.pocket); pocket.position.z = -0.028; port.add(pocket);
+  const face = new THREE.Group(); face.position.z = -0.032;
+  const ac = new THREE.Shape(); ac.absarc(0, 0.016, 0.034, 0, Math.PI * 2, false);
+  for (const [px, py, r] of [[0, 0.036, 0.004], [-0.013, 0.03, 0.004], [0.013, 0.03, 0.004], [-0.019, 0.012, 0.0055], [0.019, 0.012, 0.0055], [0, 0.0, 0.0055], [0, 0.022, 0.0055]]) { const hp = new THREE.Path(); hp.absarc(px, py, r, 0, Math.PI * 2, true); ac.holes.push(hp); }
+  const dc = new THREE.Shape(); dc.absarc(-0.017, -0.034, 0.012, Math.PI / 2, Math.PI * 1.5, false); dc.absarc(0.017, -0.034, 0.012, -Math.PI / 2, Math.PI / 2, false);
+  for (const px of [-0.017, 0.017]) { const hp = new THREE.Path(); hp.absarc(px, -0.034, 0.0075, 0, Math.PI * 2, true); dc.holes.push(hp); }
+  const ex = { depth: 0.008, bevelEnabled: true, bevelThickness: 0.0015, bevelSize: 0.001, bevelSegments: 2, curveSegments: 24 };
+  face.add(new THREE.Mesh(new THREE.ExtrudeGeometry(ac, ex), MAT.port), new THREE.Mesh(new THREE.ExtrudeGeometry(dc, ex), MAT.port));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.039, 0.0022, 8, 48), MAT.portRing); ring.position.set(0, 0.016, 0.006); face.add(ring);
+  port.add(face);
+  port.position.set(cx, cy, cz);
+  port.lookAt(cx + n[0], cy + n[1], cz + n[2]);
+  const chargeGroup = new THREE.Group(); chargeGroup.name = 'chargePort'; chargeGroup.add(pivot, port);
+  addPart(chargeGroup, 'charge', [0, 0.55, 0], 0.34);
+  CAR.flap = pivot; CAR.flapRing = MAT.portRing;
+}
+
+/* ---------- Suzuki "S" from the official logo SVG (path data from assets/maruti-suzuki-logo.svg) ---------- */
+const SUZUKI_S_PATH = 'M357.4272,163.50103c-23.97834,11.79491 -32.82033,9.69681 -43.94361,1.73177l-22.30207,-15.97447l-3.65782,2.85854l68.88775,47.99554c-20.68686,8.41463 -38.43748,19.49905 -52.95215,33.46422l-52.42484,-36.70018c4.59585,-7.7541 27.38638,-11.97252 36.56696,-5.88358l28.19674,18.75528l3.83541,-1.84279l-68.1051,-48.78926c19.13272,-8.39242 37.00544,-18.76084 52.70237,-32.69272z';
+let S_GEO = null;
+function sBadge(height, depth = 0.006) {
+  if (!S_GEO) {
+    const data = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${SUZUKI_S_PATH}"/></svg>`);
+    const shapes = data.paths.flatMap((p) => SVGLoader.createShapes(p));
+    const geo = new THREE.ExtrudeGeometry(shapes, { depth: 10, bevelEnabled: true, bevelThickness: 2.4, bevelSize: 1.6, bevelSegments: 3, curveSegments: 10 });
+    geo.computeBoundingBox(); const bb = geo.boundingBox, c = new THREE.Vector3(); bb.getCenter(c);
+    geo.translate(-c.x, -c.y, -bb.max.z);
+    geo.scale(1, -1, 1); // SVG y points down
+    const idx = geo.index; // ExtrudeGeometry is non-indexed: flip winding after the mirror
+    if (!idx) { const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv; for (let i = 0; i < pos.count; i += 3) for (const a of [pos, nor, uv]) { if (!a) continue; for (let k = 0; k < a.itemSize; k++) { const t = a.array[(i + 1) * a.itemSize + k]; a.array[(i + 1) * a.itemSize + k] = a.array[(i + 2) * a.itemSize + k]; a.array[(i + 2) * a.itemSize + k] = t; } } }
+    geo.computeVertexNormals();
+    geo.computeBoundingBox();
+    const bb2 = geo.boundingBox;
+    S_GEO = { geo, h: bb2.max.y - bb2.min.y, d: bb2.max.z - bb2.min.z };
+  }
+  const m = new THREE.Mesh(S_GEO.geo, MAT.chrome);
+  const s = height / S_GEO.h; m.scale.set(s, s, (depth / S_GEO.d));
+  m.position.z = depth; // geometry spans z ∈ [-d, 0] → shift so the back sits at 0
+  const g = new THREE.Group(); g.add(m); return g;
+}
+
+/* ---------- wheels: 195/65 R15 tyre on a dual-tone twin-spoke 15" alloy ---------- */
+function buildWheelTemplate() {
+  const g = new THREE.Group();
+  const prof = [[0.196, -0.088], [0.212, -0.0955], [0.235, -0.0985], [0.258, -0.0985], [0.280, -0.096], [0.297, -0.090], [0.308, -0.082], [0.3145, -0.072], [0.3172, -0.060], [0.3173, -0.035], [0.3155, -0.034], [0.3155, -0.027], [0.3173, -0.026], [0.3173, -0.004], [0.3155, -0.003], [0.3155, 0.003], [0.3173, 0.004], [0.3173, 0.026], [0.3155, 0.027], [0.3155, 0.034], [0.3173, 0.035], [0.3172, 0.060], [0.3145, 0.072], [0.308, 0.082], [0.297, 0.090], [0.280, 0.096], [0.258, 0.0985], [0.235, 0.0985], [0.212, 0.0955], [0.196, 0.088]];
+  const k = TYRE_R / 0.3173;
+  const tyreGeo = new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(r * k, y)), 128);
+  tyreGeo.rotateX(Math.PI / 2);
+  const tyre = new THREE.Mesh(tyreGeo, MAT.rubber); tyre.name = 'tyre'; g.add(tyre);
+  // spoke face
+  const face = new THREE.Shape(); face.absarc(0, 0, 0.186, 0, Math.PI * 2, false);
+  const delta = (r) => (5 + (10 * (r - 0.07)) / 0.1) * DEG, wA = (r) => 0.0115 / r;
+  const addHole = (pts) => { const p = new THREE.Path(); pts.forEach(([r, a], i) => (i ? p.lineTo(r * Math.cos(a), r * Math.sin(a)) : p.moveTo(r * Math.cos(a), r * Math.sin(a)))); p.closePath(); face.holes.push(p); };
+  for (let i = 0; i < 5; i++) {
+    const phi = (90 + i * 72) * DEG, sm = [], lg = [];
+    for (let s = 0; s <= 10; s++) { const r = 0.106 + (0.062 * s) / 10; sm.push([r, phi - delta(r) + wA(r)]); }
+    for (let s = 10; s >= 0; s--) { const r = 0.106 + (0.062 * s) / 10; sm.push([r, phi + delta(r) - wA(r)]); }
+    addHole(sm);
+    for (let s = 0; s <= 10; s++) { const r = 0.082 + (0.086 * s) / 10; lg.push([r, phi + delta(r) + wA(r)]); }
+    const a1 = phi + delta(0.168) + wA(0.168), a2 = phi + 72 * DEG - delta(0.168) - wA(0.168);
+    for (let s = 1; s < 8; s++) lg.push([0.168, a1 + ((a2 - a1) * s) / 8]);
+    for (let s = 10; s >= 0; s--) { const r = 0.082 + (0.086 * s) / 10; lg.push([r, phi + 72 * DEG - delta(r) - wA(r)]); }
+    const b1 = phi + 72 * DEG - delta(0.082) - wA(0.082), b2 = phi + delta(0.082) + wA(0.082);
+    for (let s = 1; s < 6; s++) lg.push([0.082, b1 + ((b2 - b1) * s) / 6]);
+    addHole(lg);
+  }
+  const faceGeo = new THREE.ExtrudeGeometry(face, { depth: 0.016, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.003, bevelSegments: 2, curveSegments: 72 });
+  const fp = faceGeo.attributes.position;
+  for (let i = 0; i < fp.count; i++) { const r = Math.hypot(fp.getX(i), fp.getY(i)); fp.setZ(i, fp.getZ(i) + 0.03 + 0.026 * (r / 0.186) ** 2); }
+  faceGeo.computeVertexNormals();
+  g.add(new THREE.Mesh(faceGeo, [MAT.rimFace, MAT.rimBlack]));
+  const barrel = new THREE.LatheGeometry([[0.170, -0.090], [0.183, -0.093], [0.191, -0.088], [0.191, 0.078], [0.196, 0.084], [0.205, 0.088], [0.205, 0.094], [0.193, 0.095]].map(([r, y]) => new THREE.Vector2(r, y)), 96);
+  barrel.rotateX(Math.PI / 2);
+  g.add(new THREE.Mesh(barrel, MAT.barrel));
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.031, 0.031, 0.012, 36), MAT.gloss); cap.rotation.x = Math.PI / 2; cap.position.z = 0.058; g.add(cap);
+  const sb = sBadge(0.03, 0.003); sb.position.z = 0.064; g.add(sb);
+  for (let n = 0; n < 4; n++) { const a = (45 + n * 90) * DEG; const nut = new THREE.Mesh(new THREE.CylinderGeometry(0.0085, 0.0085, 0.014, 6), MAT.chrome); nut.rotation.x = Math.PI / 2; nut.position.set(Math.cos(a) * 0.05, Math.sin(a) * 0.05, 0.05); g.add(nut); }
+  const disc = new THREE.LatheGeometry([[0.07, -0.034], [0.128, -0.034], [0.128, -0.012], [0.07, -0.012], [0.07, -0.034]].map(([r, y]) => new THREE.Vector2(r, y)), 64);
+  disc.rotateX(Math.PI / 2); g.add(new THREE.Mesh(disc, MAT.disc));
+  const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 32), MAT.barrel); hat.rotation.x = Math.PI / 2; hat.position.z = -0.01; g.add(hat);
+  const cal = new THREE.Mesh(new RoundedBoxGeometry(0.05, 0.1, 0.05, 2, 0.01), MAT.caliper); cal.position.set(Math.cos(160 * DEG) * 0.105, Math.sin(160 * DEG) * 0.105, -0.022); cal.rotation.z = 70 * DEG; g.add(cal);
+  return g;
+}
+
+/* ---------- door mirror, sculpted as a small SDF ---------- */
+function fixWinding(M) {
+  let agree = 0;
+  for (let k = 0; k < Math.min(M.t.length, 6000); k += 3) {
+    const P = M.p, a = 3 * M.t[k], b = 3 * M.t[k + 1], c = 3 * M.t[k + 2];
+    const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
+    agree += Math.sign((uy * vz - uz * vy) * M.n[a] + (uz * vx - ux * vz) * M.n[a + 1] + (ux * vy - uy * vx) * M.n[a + 2]);
+  }
+  if (agree < 0) for (let k = 0; k < M.t.length; k += 3) { const t = M.t[k + 1]; M.t[k + 1] = M.t[k + 2]; M.t[k + 2] = t; }
+}
+async function buildMirrorTemplate() {
+  const sd = (x, y, z) => {
+    const ex = (x - 0.012) / 0.062, ey = y / 0.058, ez = z / 0.098;
+    const k0 = Math.sqrt(ex * ex + ey * ey + ez * ez), k1 = Math.sqrt((ex / 0.062) ** 2 + (ey / 0.058) ** 2 + (ez / 0.098) ** 2);
+    let d = (k0 * (k0 - 1)) / k1;
+    d = smax(d, -(x + 0.01), 0.006);
+    const qx = Math.abs(x - 0.022) - 0.03, qy = Math.abs(y + 0.032) - 0.012, qz = Math.abs(z + 0.118) - 0.042;
+    const arm = Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - 0.008;
+    return smin(d, arm, 0.02);
+  };
+  const raw = await surfaceNets(sd, [-0.035, -0.08, -0.2, 0.09, 0.075, 0.115], 0.004, null, 1);
+  const M = new CutMesh(raw.pos, raw.nrm, raw.idx);
+  fixWinding(M);
+  M.cut((x) => x - 0.002, null); M.cut((x, y) => y + 0.047, null); M.cut((x, y, az, nx, ny, nz, z) => z + 0.085, null);
+  const paint = [], black = [];
+  for (let k = 0; k < M.t.length; k += 3) { const c = M.centroid(k); (c[0] > 0.002 && c[1] > -0.047 && c[2] > -0.085 ? paint : black).push(k); }
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(toGeo(M.patch(paint)), MAT.paint), new THREE.Mesh(toGeo(M.patch(black)), MAT.gloss));
+  const rr = new THREE.Shape(); const w = 0.083, h = 0.044, r = 0.02;
+  rr.moveTo(-w + r, -h); rr.lineTo(w - r, -h); rr.quadraticCurveTo(w, -h, w, -h + r); rr.lineTo(w, h - r); rr.quadraticCurveTo(w, h, w - r, h); rr.lineTo(-w + r, h); rr.quadraticCurveTo(-w, h, -w, h - r); rr.lineTo(-w, -h + r); rr.quadraticCurveTo(-w, -h, -w + r, -h);
+  const glass = new THREE.Mesh(new THREE.ShapeGeometry(rr, 8), MAT.mirror); glass.rotation.y = -Math.PI / 2; glass.position.set(-0.0108, 0.004, 0.006);
+  g.add(glass);
+  return g;
+}
+
+/* ---------- details: handles, badges, plate, antenna, wipers ---------- */
+function orientToNormal(obj, n) { obj.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(...n).normalize()); }
+function buildDetails(mirrorTpl) {
+  for (const s of [1, -1]) {
+    const m = mirrorTpl.clone(true); m.name = s > 0 ? 'mirror_R' : 'mirror_L';
+    m.position.set(0.70, 1.10, 0.9 * s); m.rotation.y = -3 * DEG * s; if (s < 0) m.scale.z = -1;
+    addPart(m, 'mirrors', [0.15, 0.55, 1.0 * s], 0.1);
+    for (const [x, y, ex] of [[0.06, 0.924, [0.15, 0.55, 0.8]], [-0.96, 0.971, [-0.1, 0.55, 0.8]]]) {
+      const z = bodyZ(x, y), n = bodyNormal(x, y, z);
+      const hd = new THREE.Mesh(new RoundedBoxGeometry(0.15, 0.024, 0.018, 3, 0.008), MAT.paint); hd.name = 'doorHandle';
+      const grp = new THREE.Group(); grp.add(hd);
+      grp.position.set(x + n[0] * 0.012, y + n[1] * 0.012, (z + n[2] * 0.012) * s);
+      orientToNormal(grp, [n[0], n[1], n[2] * s]);
+      hd.rotation.z = 0; // long axis stays along x
+      addPart(grp, 'doors', [ex[0], ex[1], ex[2] * s], 0.1);
+    }
+  }
+  // front plate (as shown in the 3/4 reference render) and badges
+  const py = 0.49, px = bodyX(1, py, 0);
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.006), [MAT.matte, MAT.matte, MAT.matte, MAT.matte, MAT.plate, MAT.matte]);
+  plate.rotation.y = Math.PI / 2; plate.position.set(px + 0.006, py, 0); plate.name = 'frontPlate';
+  addPart(plate, 'bumperF', [0.75, 0.12, 0], 0.06);
+  const fy = 0.752, fbx = bodyX(1, fy, 0);
+  const front = sBadge(0.105, 0.008); front.rotation.y = Math.PI / 2; front.position.set(fbx + 0.002, fy, 0); front.name = 'suzukiBadgeFront';
+  addPart(front, 'grille', [0.95, 0.12, 0], 0.06);
+  const ry = 1.016, rbx = bodyX(-1, ry, 0);
+  const rear = sBadge(0.06, 0.006); rear.rotation.y = -Math.PI / 2; rear.position.set(rbx - 0.002, ry, 0); rear.name = 'suzukiBadgeRear';
+  addPart(rear, 'boot', [-0.4, 0.95, 0], 0.18);
+  // rear MARUTI SUZUKI plate on the bumper, as in the reference rear view
+  const rpy = 0.80, rpx = bodyX(-1, rpy, 0);
+  const rplate = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.006), [MAT.matte, MAT.matte, MAT.matte, MAT.matte, MAT.plate, MAT.matte]);
+  rplate.rotation.y = -Math.PI / 2; rplate.position.set(rpx - 0.006, rpy, 0); rplate.name = 'rearPlate';
+  addPart(rplate, 'boot', [-0.4, 0.95, 0], 0.18);
+  // rear bumper details: vertical red reflectors at the corners and twin chrome accents in the diffuser
+  for (const s of [1, -1]) {
+    { const y = 0.50, az = 0.70, x = bodyX(-1, y, az), n = bodyNormal(x, y, az);
+      const rf = new THREE.Mesh(new RoundedBoxGeometry(0.032, 0.11, 0.012, 2, 0.006), MAT.tailLens); rf.name = 'rearReflector';
+      const grp = new THREE.Group(); grp.add(rf); grp.position.set(x + n[0] * 0.004, y, (az + n[2] * 0.004) * s);
+      orientToNormal(grp, [n[0], n[1], n[2] * s]); addPart(grp, 'bumperR', [-0.75, 0.12, 0.2 * s], 0.06); }
+    { const y = 0.31, az = 0.36, x = bodyX(-1, y, az * s);
+      const cr = new THREE.Mesh(new RoundedBoxGeometry(0.012, 0.034, 0.26, 2, 0.006), MAT.chrome); cr.name = 'diffuserTrim';
+      cr.position.set(x - 0.004, y, az * s); addPart(cr, 'bumperR', [-0.75, 0.12, 0], 0.06); }
+  }
+  // fin antenna
+  const fin = new THREE.Shape(); fin.moveTo(0, 0); fin.quadraticCurveTo(-0.06, 0.004, -0.12, 0.028); fin.quadraticCurveTo(-0.152, 0.036, -0.17, 0); fin.lineTo(0, 0);
+  const finGeo = new THREE.ExtrudeGeometry(fin, { depth: 0.026, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.005, bevelSegments: 4, curveSegments: 16 });
+  finGeo.translate(0, 0, -0.013);
+  const fx = -0.98, fyy = bodyY(fx - 0.09, 0);
+  const finM = new THREE.Mesh(finGeo, MAT.gloss); finM.position.set(fx, fyy - 0.004, 0); finM.name = 'finAntenna';
+  addPart(finM, 'roof', [0, 1.25, 0], 0.3);
+  // wipers parked at the cowl
+  for (const [z0, len] of [[0.34, 0.56], [-0.24, 0.5]]) {
+    const y = 1.088, x = bodyX(1, y, z0) - 0.004;
+    const wpr = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.01, len), MAT.matte); wpr.position.set(x, y, z0); wpr.rotation.x = 0.04; wpr.name = 'wiper';
+    addPart(wpr, 'glass', [0.45, 1.0, 0], 0.24);
+  }
+}
+
+/* ---------- cabin (simplified, laid out from the cabin photos; right-hand drive) ---------- */
+function buildInterior() {
+  const g = new THREE.Group(); g.name = 'cabin';
+  const RB = (w, h, d, r, mat) => new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, r), mat);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(1.95, 1.42), MAT.carpet); floor.rotation.x = -Math.PI / 2; floor.position.set(-0.3, 0.316, 0); g.add(floor);
+  for (const s of [1, -1]) {
+    const seat = new THREE.Group();
+    const cushion = RB(0.52, 0.12, 0.52, 0.05, MAT.seat); cushion.position.set(0, 0.545, 0);
+    const back = RB(0.13, 0.66, 0.5, 0.05, MAT.seat); back.position.set(-0.27, 0.92, 0); back.rotation.z = 0.3;
+    const head = RB(0.1, 0.17, 0.27, 0.04, MAT.seat); head.position.set(-0.39, 1.31, 0); head.rotation.z = 0.25;
+    const base = RB(0.42, 0.18, 0.42, 0.03, MAT.seatDark); base.position.set(0, 0.405, 0);
+    seat.add(cushion, back, head, base); seat.position.set(0.1, 0, s * 0.37); g.add(seat);
+  }
+  const rc = RB(0.5, 0.13, 1.32, 0.05, MAT.seat); rc.position.set(-0.86, 0.555, 0);
+  const rbk = RB(0.13, 0.62, 1.32, 0.05, MAT.seat); rbk.position.set(-1.14, 0.92, 0); rbk.rotation.z = 0.36;
+  g.add(rc, rbk);
+  for (const z of [-0.47, 0, 0.47]) { const hr = RB(0.1, 0.15, 0.26, 0.04, MAT.seat); hr.position.set(-1.23, 1.235, z); hr.rotation.z = 0.32; g.add(hr); }
+  const dash = RB(0.4, 0.22, 1.36, 0.07, MAT.dash); dash.position.set(0.6, 0.86, 0);
+  const pad = RB(0.3, 0.06, 1.3, 0.03, MAT.dash); pad.position.set(0.59, 0.995, 0);
+  const bar = RB(0.02, 0.025, 1.3, 0.008, MAT.trim); bar.position.set(0.405, 0.9, 0);
+  g.add(dash, pad, bar);
+  const scr = new THREE.Group();
+  const bezel = RB(0.012, 0.172, 0.29, 0.006, MAT.dash);
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.27, 0.155), MAT.screen); screen.rotation.y = -Math.PI / 2; screen.position.x = -0.0065;
+  scr.add(bezel, screen); scr.position.set(0.43, 1.1, 0); scr.rotation.z = -0.17; g.add(scr);
+  const sw = new THREE.Group();
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.016, 12, 56), MAT.seatDark);
+  const hub = RB(0.085, 0.075, 0.04, 0.018, MAT.dash);
+  const spk1 = RB(0.3, 0.03, 0.016, 0.008, MAT.dash); spk1.position.y = -0.01;
+  const spk2 = RB(0.03, 0.17, 0.016, 0.008, MAT.dash); spk2.position.y = -0.09;
+  const swb = sBadge(0.028, 0.003); swb.position.z = 0.02;
+  const inner = new THREE.Group(); inner.add(rim, hub, spk1, spk2, swb); inner.rotation.y = -Math.PI / 2;
+  sw.add(inner); sw.position.set(0.3, 0.95, 0.37); sw.rotation.z = -0.42; g.add(sw);
+  const col = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.26, 16), MAT.dash); col.rotation.z = Math.PI / 2 - 0.42; col.position.set(0.42, 0.9, 0.37); g.add(col);
+  const cons = RB(0.62, 0.2, 0.2, 0.03, MAT.dash); cons.position.set(0.05, 0.42, 0); g.add(cons);
+  const fare = new THREE.Group();
+  const fb = RB(0.03, 0.12, 0.17, 0.01, MAT.dash);
+  const fs = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.095), MAT.fare); fs.rotation.y = -Math.PI / 2; fs.position.x = -0.016;
+  fare.add(fb, fs); fare.position.set(-0.27, 0.6, 0); g.add(fare);
+  const cam = RB(0.05, 0.05, 0.1, 0.012, MAT.dash); cam.position.set(0.27, 1.43, 0); g.add(cam);
+  const rvm = RB(0.03, 0.065, 0.24, 0.015, MAT.dash); rvm.position.set(0.22, 1.37, 0); g.add(rvm);
+  for (const m of [MAT.seat, MAT.seatDark, MAT.dash, MAT.trim, MAT.carpet]) m.envMapIntensity = 0.3;
+  addPart(g, 'cabin', null, 0, {});
+}
+
+/* ---------- schematic powertrain & package volumes (clearly not engineering geometry) ---------- */
+function buildSchematics() {
+  const bat = new THREE.Mesh(new RoundedBoxGeometry(1.92, 0.12, 1.3, 3, 0.03), MAT.battery);
+  bat.position.set(-0.16, 0.246, 0); bat.name = 'batterySchematic'; bat.renderOrder = 4;
+  addPart(bat, 'battery', null, 0, { noShadow: true }); CAR.schematic.push(bat);
+  const mg = new THREE.Group(); mg.name = 'motorSchematic';
+  const mot = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.115, 0.3, 36), MAT.motor); mot.rotation.x = Math.PI / 2; mot.position.set(0, 0, -0.09);
+  const gbx = new THREE.Mesh(new RoundedBoxGeometry(0.24, 0.26, 0.2, 3, 0.03), MAT.motor); gbx.position.set(0, 0, 0.17);
+  const inv = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.09, 0.4, 3, 0.02), MAT.motor); inv.position.set(0.1, 0.12, 0);
+  mg.add(mot, gbx, inv);
+  for (const s of [1, -1]) { const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.56, 12), MAT.motor); sh.rotation.x = Math.PI / 2; sh.position.set(0, WHEEL_Y - 0.4, s * 0.47); mg.add(sh); }
+  mg.position.set(XFA, 0.4, 0);
+  addPart(mg, 'motor', null, 0, { noShadow: true });
+  mg.traverse((o) => { if (o.isMesh) { CAR.schematic.push(o); o.renderOrder = 4; } });
+  const vol = (w, h, d, pos, comp, name) => {
+    const geo = new THREE.BoxGeometry(w, h, d), m = new THREE.Mesh(geo, MAT.volume); m.name = name;
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), MAT.volumeEdge); e.raycast = () => {}; m.add(e);
+    m.position.set(...pos); m.renderOrder = 5;
+    addPart(m, comp, null, 0, { noShadow: true }); CAR.schematic.push(m);
+  };
+  vol(0.8, 0.5, 1.0, [-1.62, 0.75, 0], 'bootVol', 'bootVolume400L');
+  vol(0.4, 0.18, 0.42, [1.66, 0.7, 0], 'frunkVol', 'frunkVolume30L');
+}
+
+/* ---------- ghost twins for x-ray and isolation ---------- */
+function buildGhosts(scene) {
+  CAR.ghostRoot = new THREE.Group(); CAR.ghostRoot.name = 'ghosts'; scene.add(CAR.ghostRoot);
+  CAR.ghosts = [];
+  CAR.root.traverse((o) => {
+    if (!o.isMesh || !o.userData.comp || CAR.schematic.includes(o) || o.material === MAT.inner || o.isLineSegments) return;
+    if (Array.isArray(o.material) ? false : o.material.blending === THREE.AdditiveBlending) return;
+    const gm = new THREE.Mesh(o.geometry, MAT.ghost); gm.matrixAutoUpdate = false; gm.visible = false; gm.raycast = () => {};
+    gm.userData.src = o; CAR.ghostRoot.add(gm); CAR.ghosts.push(gm); o.userData.ghost = gm;
+  });
+}
+
+async function buildCar(scene, report) {
+  CAR.root = new THREE.Group(); CAR.root.name = 'AAROH'; scene.add(CAR.root);
+  report(0.0, 'Reading the package: 4,250 × 1,780 × 1,550 mm');
+  buildProfiles(); buildUMap(); buildPolys();
+  await yieldUI();
+  const patches = await buildBodyGeometry((p, label) => report(0.02 + p * 0.78, label));
+  window.__aaroh.parts = Object.fromEntries(Object.entries(patches).map(([k, p]) => [k, p.idx.length / 3]));
+  report(0.82, 'Fitting panels, glass and lamps');
+  buildBodyParts(patches);
+  await yieldUI();
+  report(0.88, 'Casting 15-inch alloys and 195/65 R15 tyres');
+  const wt = buildWheelTemplate();
+  for (const [x, z, front, nm] of [[XFA, PKG.trackF / 2, true, 'FR'], [XFA, -PKG.trackF / 2, true, 'FL'], [XRA, PKG.trackR / 2, false, 'RR'], [XRA, -PKG.trackR / 2, false, 'RL']]) {
+    const w = wt.clone(true); w.name = `wheel_${nm}`; w.position.set(x, WHEEL_Y, z); if (z < 0) w.scale.z = -1;
+    addPart(w, 'wheels', [0, 0, Math.sign(z) * 0.55], 0);
+    if (front) CAR.frontWheels.push(w);
+  }
+  report(0.92, 'Mirrors, handles and badges');
+  const mirror = await buildMirrorTemplate();
+  buildDetails(mirror);
+  report(0.96, 'Cabin and schematic powertrain');
+  buildInterior(); buildSchematics(); buildGhosts(scene);
+  CAR.root.updateMatrixWorld(true);
+  report(1, 'Model complete');
+  return CAR;
+}
+
+/* =====================================================================
+   7. STUDIO — stepwell terraces, jaali screens, mandala floor, light rig
+   ===================================================================== */
+const STU = {};
+function makeMandalaTexture() {
+  const S = LOW ? 1024 : 2048;
+  return canvasTex(S, S, (g) => {
+    g.fillStyle = '#000'; g.fillRect(0, 0, S, S);
+    g.translate(S / 2, S / 2);
+    const R = S / 2 - 6, k = S / 2048;
+    g.strokeStyle = '#fff'; g.fillStyle = '#fff';
+    const ring = (r, w, a) => { g.globalAlpha = a; g.lineWidth = w * k; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.stroke(); };
+    ring(R * 0.995, 4, 0.95); ring(R * 0.965, 2, 0.6); ring(R * 0.935, 1.5, 0.45); ring(R * 0.9, 2.5, 0.75); ring(R * 0.62, 2, 0.55); ring(R * 0.585, 3.5, 0.85); ring(R * 0.3, 1.5, 0.3);
+    for (let i = 0; i < 360; i++) {
+      const a = i * DEG, r0 = i % 10 === 0 ? R * 0.94 : i % 5 === 0 ? R * 0.95 : R * 0.957;
+      g.globalAlpha = i % 10 === 0 ? 0.9 : 0.5; g.lineWidth = (i % 10 === 0 ? 2.5 : 1.3) * k;
+      g.beginPath(); g.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); g.lineTo(Math.cos(a) * R * 0.965, Math.sin(a) * R * 0.965); g.stroke();
+    }
+    for (let i = 0; i < 16; i++) { // 16-petal lotus
+      g.save(); g.rotate((i / 16) * Math.PI * 2);
+      const r0 = R * 0.62, r1 = R * 0.895, w = R * 0.12;
+      g.globalAlpha = 0.8; g.lineWidth = 2.2 * k;
+      g.beginPath(); g.moveTo(r0, 0); g.bezierCurveTo(r0 + (r1 - r0) * 0.35, w, r0 + (r1 - r0) * 0.75, w * 0.55, r1, 0); g.bezierCurveTo(r0 + (r1 - r0) * 0.75, -w * 0.55, r0 + (r1 - r0) * 0.35, -w, r0, 0); g.stroke();
+      g.globalAlpha = 0.3; g.beginPath(); g.moveTo(r0 + 24 * k, 0); g.lineTo(r1 - 36 * k, 0); g.stroke();
+      g.restore();
+    }
+    g.globalAlpha = 0.7; g.lineWidth = 2.5 * k;
+    for (const rot of [0, Math.PI / 4]) { g.save(); g.rotate(rot); const s = R * 0.585 * Math.SQRT1_2; g.strokeRect(-s, -s, 2 * s, 2 * s); g.restore(); }
+    g.globalAlpha = 0.5; g.lineWidth = 1.4 * k;
+    for (let i = 0; i < 72; i++) { g.save(); g.rotate((i / 72) * Math.PI * 2); g.translate(R * 0.9175, 0); const s = R * 0.011; for (const rot of [0, Math.PI / 4]) { g.save(); g.rotate(rot); g.strokeRect(-s, -s, 2 * s, 2 * s); g.restore(); } g.restore(); }
+    g.globalAlpha = 0.32; g.lineWidth = 1.4 * k;
+    for (let i = 0; i < 8; i++) { g.save(); g.rotate((i / 8) * Math.PI * 2); g.beginPath(); g.ellipse(R * 0.15, 0, R * 0.15, R * 0.05, 0, 0, Math.PI * 2); g.stroke(); g.restore(); }
+    g.globalAlpha = 0.6; g.font = `600 ${Math.round(R * 0.026)}px Rajdhani, Sora, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const words = ['आरोह', '·', 'AAROH', '·', 'INDIA 2035', '·'];
+    for (let rep = 0; rep < 4; rep++) words.forEach((w2, i) => { const a = ((rep * words.length + i) / (4 * words.length)) * Math.PI * 2; g.save(); g.rotate(a); g.translate(0, -R * 0.6025); g.fillText(w2, 0, 0); g.restore(); });
+  }, { color: false, aniso: 8 });
+}
+function makeJaaliTexture() {
+  return canvasTex(512, 512, (g, w) => {
+    g.fillStyle = '#000'; g.fillRect(0, 0, w, w);
+    const n = 4, c = w / n;
+    for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) {
+      g.save(); g.translate(i * c, j * c); g.fillStyle = '#fff';
+      for (const rot of [0, Math.PI / 4]) { g.save(); g.rotate(rot); const s = c * 0.27; g.fillRect(-s, -s, 2 * s, 2 * s); g.restore(); }
+      g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, c * 0.085, 0, Math.PI * 2); g.fill();
+      g.restore();
+      g.save(); g.translate(i * c + c / 2, j * c + c / 2); g.rotate(Math.PI / 4); g.fillStyle = '#fff'; const q = c * 0.09; g.fillRect(-q, -q, 2 * q, 2 * q); g.restore();
+    }
+  }, { color: false, repeat: true });
+}
+function makeAOTexture() {
+  return canvasTex(512, 256, (g, w, h) => {
+    g.fillStyle = '#000'; g.fillRect(0, 0, w, h);
+    const sx = w / 5.2, sy = h / 2.6;
+    const rr = (cx, cy, hx, hy, r) => { g.beginPath(); g.moveTo(cx - hx + r, cy - hy); g.arcTo(cx + hx, cy - hy, cx + hx, cy + hy, r); g.arcTo(cx + hx, cy + hy, cx - hx, cy + hy, r); g.arcTo(cx - hx, cy + hy, cx - hx, cy - hy, r); g.arcTo(cx - hx, cy - hy, cx + hx, cy - hy, r); g.closePath(); };
+    for (let i = 14; i >= 0; i--) { const e = i * 4.5; g.globalAlpha = 0.07; g.fillStyle = '#fff'; rr(w / 2, h / 2, 2.0 * sx + e, 0.82 * sy + e, 60 + e); g.fill(); }
+    for (const [x, z] of [[XFA, 0.77], [XFA, -0.77], [XRA, 0.77], [XRA, -0.77]]) {
+      const cx = w / 2 + x * sx, cy = h / 2 + z * sy;
+      const gr = g.createRadialGradient(cx, cy, 2, cx, cy, 34); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(cx - 40, cy - 40, 80, 80);
+    }
+  }, { color: false });
+}
+const FloorShader = {
+  name: 'AarohFloor',
+  uniforms: {
+    color: { value: null }, tDiffuse: { value: null }, textureMatrix: { value: null },
+    tPattern: { value: null }, uPatR: { value: 4.4 }, uGlow: { value: 0.3 }, uReveal: { value: 0 }, uReflect: { value: 0.32 },
+    uFogColor: { value: null }, uFogDensity: { value: 0.03 }, uLine: { value: null }, uPool: { value: null }, uBase: { value: null }, uTexel: { value: null }, uTime: { value: 0 },
+  },
+  vertexShader: `uniform mat4 textureMatrix; varying vec4 vUvR; varying vec3 vW;
+    void main(){ vUvR = textureMatrix * vec4(position, 1.0); vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform sampler2D tPattern; uniform float uPatR; uniform float uGlow; uniform float uReveal; uniform float uReflect;
+    uniform vec3 uFogColor; uniform float uFogDensity; uniform vec3 uLine; uniform vec3 uPool; uniform vec3 uBase; uniform vec2 uTexel; uniform float uTime;
+    varying vec4 vUvR; varying vec3 vW;
+    void main(){
+      float r = length(vW.xz);
+      vec2 ruv = vUvR.xy / vUvR.w;
+      float b = 1.5 + 7.0 * smoothstep(0.4, 6.0, r);
+      vec3 refl = texture2D(tDiffuse, ruv).rgb * 0.2;
+      refl += texture2D(tDiffuse, ruv + vec2( 1.0,  0.3) * uTexel * b).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2(-1.0, -0.3) * uTexel * b).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2( 0.3, -1.0) * uTexel * b).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2(-0.3,  1.0) * uTexel * b).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2( 0.7,  0.7) * uTexel * b * 2.0).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2(-0.7, -0.7) * uTexel * b * 2.0).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2( 0.7, -0.7) * uTexel * b * 2.0).rgb * 0.1;
+      refl += texture2D(tDiffuse, ruv + vec2(-0.7,  0.7) * uTexel * b * 2.0).rgb * 0.1;
+      float pat = 0.0;
+      if (r < uPatR) pat = texture2D(tPattern, vW.xz / (2.0 * uPatR) + 0.5).r;
+      pat *= 1.0 - smoothstep(uReveal * uPatR * 1.06 - 0.7, uReveal * uPatR * 1.06, r);
+      float grid = 0.0;
+      if (r > uPatR + 0.4) { vec2 q = abs(fract(vW.xz / 1.2) - 0.5); grid = (1.0 - smoothstep(0.0, 0.012, min(q.x, q.y))) * 0.18 * exp(-(r - uPatR) * 0.12); }
+      // light studio floor: flat near-white base, soft reflection, mandala and grid drawn as faint grey lines
+      vec3 col = uBase + uPool * exp(-r * r / 9.0); // far floor == backdrop tone (seamless cove)
+      col = mix(col, refl, uReflect * exp(-r * r / 60.0));
+      col = mix(col, uLine, clamp((pat + grid) * 0.0, 0.0, 1.0)); // clean canvas floor: no mandala or grid lines
+      float d = length(vW - cameraPosition);
+      col = mix(col, uFogColor, 1.0 - exp(-uFogDensity * uFogDensity * d * d));
+      gl_FragColor = vec4(col, 1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`,
+};
+function buildEnvScene(variant) {
+  const s = new THREE.Scene(), dusk = variant === 'dusk';
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(40, 32, 16), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false,
+    uniforms: { top: { value: new THREE.Color(dusk ? 0x5a4a52 : 0xf4f6fa) }, bot: { value: new THREE.Color(dusk ? 0x2a2420 : 0x9ea3ab) } },
+    vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: 'uniform vec3 top; uniform vec3 bot; varying vec3 vP; void main(){ gl_FragColor = vec4(mix(bot, top, smoothstep(-0.25, 0.85, vP.y)), 1.0); }',
+  })));
+  const panel = (w, h, color, k, pos, look) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(...pos); m.lookAt(...look); s.add(m); };
+  panel(6.5, 1.6, 0xffffff, dusk ? 0.7 : 1.15, [0, 6, 0], [0, 0, 0]);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(2.8, 0.07, 8, 96), new THREE.MeshBasicMaterial({ color: new THREE.Color(dusk ? 0xffc890 : 0xfff2df).multiplyScalar(3.2) }));
+  ring.rotation.x = Math.PI / 2; ring.position.y = 6.3; s.add(ring);
+  panel(10, 0.22, 0xffffff, dusk ? 0.6 : 1.5, [0, 3.4, 6.5], [0, 1.2, 0]);
+  panel(10, 0.22, 0xffffff, dusk ? 0.6 : 1.5, [0, 3.4, -6.5], [0, 1.2, 0]);
+  panel(10, 0.12, 0xffffff, dusk ? 0.3 : 0.7, [0, 1.25, 6.5], [0, 1.0, 0]);
+  panel(10, 0.12, 0xffffff, dusk ? 0.3 : 0.7, [0, 1.25, -6.5], [0, 1.0, 0]);
+  panel(5, 0.35, dusk ? 0xff9a3c : 0xffe2c0, dusk ? 2.6 : 0.9, [-7, 1.6, 0], [0, 1, 0]);
+  panel(5, 0.35, 0xdfe8ff, dusk ? 0.4 : 0.8, [7, 1.4, 0], [0, 1, 0]);
+  panel(3, 1.2, dusk ? 0xff7a2a : 0xffffff, dusk ? 1.8 : 0.45, [-5, 0.8, 5], [0, 0.5, 0]);
+  panel(3, 1.2, dusk ? 0xff7a2a : 0xffffff, dusk ? 1.4 : 0.35, [5, 0.8, -5], [0, 0.5, 0]);
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 48), new THREE.MeshBasicMaterial({ color: dusk ? 0x2a2622 : 0x8c9098 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -0.02; s.add(floor);
+  return s;
+}
+function buildStudio(scene, renderer) {
+  const pm = new THREE.PMREMGenerator(renderer);
+  const envA = buildEnvScene('studio'), envB = buildEnvScene('dusk');
+  STU.envStudio = pm.fromScene(envA, 0.02).texture;
+  STU.envDusk = pm.fromScene(envB, 0.02).texture;
+  pm.dispose();
+  for (const s of [envA, envB]) s.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+  scene.environment = STU.envStudio;
+  // soft light-grey studio canvas: gentle vertical gradient, floor and fog blend into it at the horizon
+  // one canvas tone for backdrop, fog and floor so there is no horizon line (infinity-cove look); the grade pass adds a soft vignette
+  scene.background = new THREE.Color(0xeceef0);
+  scene.fog = new THREE.FogExp2(new THREE.Color(0xeceef0), 0.02);
+  // floor with planar reflection, mandala inlay and fog
+  TEX.mandala = makeMandalaTexture();
+  const floorGeo = new THREE.CircleGeometry(42, 128);
+  if (!LOW) {
+    const rw = Math.round(innerWidth * Math.min(devicePixelRatio, 1.5) * 0.5), rh = Math.round(innerHeight * Math.min(devicePixelRatio, 1.5) * 0.5);
+    STU.floor = new Reflector(floorGeo, { textureWidth: rw, textureHeight: rh, clipBias: 0.003, multisample: 0, shader: FloorShader, color: 0xffffff });
+    const u = STU.floor.material.uniforms;
+    u.tPattern.value = TEX.mandala; u.uFogColor.value = scene.fog.color; u.uLine.value = new THREE.Color(0x8a909a); u.uPool.value = new THREE.Color(0.035, 0.035, 0.035); u.uBase.value = new THREE.Color(0xeceef0); u.uTexel.value = new THREE.Vector2(1 / rw, 1 / rh);
+    u.uReflect.value = 0.1;
+    STU.floorU = u;
+  } else {
+    // unlit floor in the exact backdrop tone, so floor and canvas meet without a horizon line
+    const mat = new THREE.MeshBasicMaterial({ color: 0xeceef0 });
+    STU.floor = new THREE.Mesh(floorGeo, mat);
+    STU.floorU = null; STU.floorMat = null;
+  }
+  STU.floor.rotation.x = -Math.PI / 2; STU.floor.name = 'studioFloor';
+  scene.add(STU.floor);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), new THREE.ShadowMaterial({ opacity: 0.32, color: 0x1a1d24 }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.002; shadow.receiveShadow = true; scene.add(shadow);
+  const ao = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 2.6), new THREE.MeshBasicMaterial({ color: 0x0c0e12, alphaMap: makeAOTexture(), transparent: true, opacity: 0.75, depthWrite: false }));
+  ao.rotation.x = -Math.PI / 2; ao.position.y = 0.003; ao.renderOrder = 1; scene.add(ao); STU.ao = ao;
+  // stage rings
+  const ringMat = (c, k) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k) });
+  STU.rings = [];
+  for (const [r, c, k] of [[4.45, 0xf3d6aa, 0.75], [4.62, 0xf2992e, 0.55]]) { const m = new THREE.Mesh(new THREE.TorusGeometry(r, 0.011, 6, 220), ringMat(c, k)); m.rotation.x = Math.PI / 2; m.position.y = 0.012; scene.add(m); STU.rings.push(m); }
+  // overhead mandala light ring (also baked into the environment reflections)
+  const crown = new THREE.Group(); crown.position.y = 6.3;
+  const cm = ringMat(0xfff2df, 2.4);
+  for (const r of [2.8, 3.25]) { const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.03, 6, 160), cm); t.rotation.x = Math.PI / 2; crown.add(t); }
+  for (let i = 0; i < 16; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.018, 0.018), cm); const a = (i / 16) * Math.PI * 2; b.position.set(Math.cos(a) * 3.03, 0, Math.sin(a) * 3.03); b.rotation.y = -a; crown.add(b); }
+  scene.add(crown); STU.crown = crown; STU.crownMat = cm;
+  // stepwell (Chand Baori-style) terraces with stair flights, instanced
+  const stone = new THREE.MeshStandardMaterial({ color: 0x23242c, roughness: 0.92, metalness: 0 });
+  const terr = 8, S0 = 21, D = 0.95, H = 0.55, mats = [];
+  for (let k = 0; k < terr; k++) for (let side = 0; side < 4; side++) {
+    const d = S0 + k * D + D / 2, len = 2 * (S0 + (k + 1) * D), hk = H * (k + 1), m4 = new THREE.Matrix4();
+    const rot = new THREE.Matrix4().makeRotationY((side * Math.PI) / 2);
+    m4.compose(new THREE.Vector3(d, hk / 2, 0), new THREE.Quaternion(), new THREE.Vector3(D, hk, len)); mats.push(rot.clone().multiply(m4));
+  }
+  for (let k = 1; k < terr; k++) for (let side = 0; side < 4; side++) {
+    const d = S0 + k * D, half = S0 + k * D - 1.2, rot = new THREE.Matrix4().makeRotationY((side * Math.PI) / 2);
+    for (let c = -half; c <= half; c += 2.4) for (let m = 0; m < 5; m++) for (const sgn of [-1, 1]) {
+      const m4 = new THREE.Matrix4().compose(new THREE.Vector3(d - 0.11, H * k + m * 0.11 + 0.055, c + sgn * (4 - m) * 0.24 + sgn * 0.12), new THREE.Quaternion(), new THREE.Vector3(0.22, 0.11, 0.24));
+      mats.push(rot.clone().multiply(m4));
+    }
+  }
+  const steps = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), stone, mats.length);
+  mats.forEach((m, i) => steps.setMatrixAt(i, m)); steps.instanceMatrix.needsUpdate = true; steps.name = 'stepwell';
+  steps.visible = false; // hidden in the white studio
+  scene.add(steps);
+  // jaali screens: twelve pointed arches glowing through an eight-point-star lattice
+  const jt = makeJaaliTexture();
+  const arch = new THREE.Shape(); arch.moveTo(-1.3, 0); arch.lineTo(1.3, 0); arch.lineTo(1.3, 3.2); arch.quadraticCurveTo(1.3, 4.1, 0, 4.75); arch.quadraticCurveTo(-1.3, 4.1, -1.3, 3.2); arch.closePath();
+  const ag = new THREE.ShapeGeometry(arch, 24); const auv = ag.attributes.uv; for (let i = 0; i < auv.count; i++) auv.setXY(i, auv.getX(i) / 0.78, auv.getY(i) / 0.78);
+  STU.jaaliMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xf6b46a).multiplyScalar(1.2), alphaMap: jt, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+  const frameMat = new THREE.MeshBasicMaterial({ color: 0x06070b, side: THREE.DoubleSide });
+  const fg = new THREE.ShapeGeometry(arch, 24); fg.scale(1.12, 1.07, 1);
+  for (let i = 0; i < 12; i++) {
+    const a = ((i + 0.5) / 12) * Math.PI * 2, R = 18.5;
+    const grp = new THREE.Group(); grp.position.set(Math.cos(a) * R, 0.05, Math.sin(a) * R); grp.lookAt(0, 0.05, 0);
+    const back = new THREE.Mesh(fg, frameMat); back.position.z = -0.05;
+    const j = new THREE.Mesh(ag, STU.jaaliMat);
+    grp.add(back, j); grp.visible = false; scene.add(grp); // dark jaali screens hidden in the white studio
+  }
+  // soft light shaft from the crown
+  const coneMat = new THREE.ShaderMaterial({
+    uniforms: { uI: { value: 0.07 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    vertexShader: 'varying vec3 vN; varying vec3 vV; varying float vY; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vY = w.y; vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }',
+    fragmentShader: 'uniform float uI; varying vec3 vN; varying vec3 vV; varying float vY; void main(){ float f = pow(abs(dot(normalize(vN), normalize(vV))), 1.6); float h = smoothstep(0.0, 6.0, vY) * (1.0 - smoothstep(5.0, 6.3, vY)); gl_FragColor = vec4(vec3(1.0, 0.93, 0.82) * uI * f * h, 1.0); }',
+  });
+  const cone = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 4.0, 6.3, 64, 1, true), coneMat); cone.position.y = 3.15; cone.renderOrder = 6; cone.raycast = () => {};
+  scene.add(cone); STU.cone = coneMat;
+  // lights
+  STU.hemi = new THREE.HemisphereLight(0xffffff, 0xc9ccd2, 0.9); scene.add(STU.hemi);
+  STU.key = new THREE.SpotLight(0xfff3e4, 110, 0, 0.62, 0.75, 2);
+  STU.key.position.set(0.6, 7.6, 1.0); STU.key.target.position.set(0, 0.5, 0);
+  STU.key.castShadow = true; STU.key.shadow.mapSize.set(LOW ? 1024 : 2048, LOW ? 1024 : 2048); STU.key.shadow.bias = -0.0001; STU.key.shadow.normalBias = 0.025;
+  STU.key.shadow.camera.near = 3; STU.key.shadow.camera.far = 12;
+  scene.add(STU.key, STU.key.target);
+  STU.rimW = new THREE.SpotLight(0xfff4ea, 160, 0, 0.55, 0.8, 2); STU.rimC = new THREE.SpotLight(0xeef3ff, 130, 0, 0.55, 0.8, 2); // neutral rims: no orange/blue pools on the floor
+  for (const l of [STU.rimW, STU.rimC]) { l.target.position.set(0, 0.7, 0); scene.add(l, l.target); }
+  STU.fill = new THREE.DirectionalLight(0xdfe6ff, 0.3); STU.fill.position.set(6, 3, 2.5); scene.add(STU.fill);
+  STU.moon = new THREE.DirectionalLight(0xeef1f6, 0.4); STU.moon.position.set(2, 10, -3); scene.add(STU.moon);
+  RectAreaLightUniformsLib.init();
+  STU.sweep = new THREE.RectAreaLight(0xffffff, 0, 5.2, 0.32); STU.sweep.position.set(0, 3.4, 0); STU.sweep.lookAt(0, 0, 0); scene.add(STU.sweep);
+}
+
+/* =====================================================================
+   8. RENDERER & POST-PROCESSING
+   ===================================================================== */
+let renderer, scene, camera, composer, bloomPass, gradePass, controls;
+const canvas = $('#stage');
+let DPR = Math.min(devicePixelRatio || 1, LOW ? 1.25 : 1.75);
+const VIEW = { w: innerWidth, h: innerHeight };
+function initRenderer() {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false });
+  renderer.setPixelRatio(DPR);
+  VIEW.w = canvas.clientWidth || innerWidth; VIEW.h = canvas.clientHeight || innerHeight;
+  renderer.setSize(VIEW.w, VIEW.h, false);
+  renderer.toneMapping = THREE.NeutralToneMapping; // keeps the white studio white (ACES greys it out)
+  renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(30, VIEW.w / VIEW.h, 0.1, 140);
+  camera.position.set(8, 2, 6);
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); showFatal('The 3D view was interrupted', 'The browser released the graphics context (often after the GPU was reset or the tab sat in the background). Reload to restore the scene.'); });
+}
+function initComposer() {
+  const rt = new THREE.WebGLRenderTarget(VIEW.w * DPR, VIEW.h * DPR, { type: THREE.HalfFloatType, samples: LOW ? 0 : 4 });
+  composer = new EffectComposer(renderer, rt);
+  composer.setPixelRatio(DPR); composer.setSize(VIEW.w, VIEW.h);
+  composer.addPass(new RenderPass(scene, camera));
+  bloomPass = new UnrealBloomPass(new THREE.Vector2(VIEW.w, VIEW.h), 0.32, 0.45, 1.6); // threshold above the white backdrop so only lamps bloom
+  if (!LOW) composer.addPass(bloomPass);
+  gradePass = new ShaderPass({
+    uniforms: { tDiffuse: { value: null }, uVig: { value: 0.16 }, uTime: { value: 0 }, uFade: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; uniform float uTime; uniform float uFade; varying vec2 vUv;
+      void main(){ vec4 c = texture2D(tDiffuse, vUv); vec2 d = vUv - 0.5; float v = smoothstep(0.9, 0.25, length(d * vec2(1.0, 1.2))); c.rgb *= mix(1.0, v, uVig);
+        float n = fract(sin(dot(vUv * vec2(1403.1, 917.7) + uTime, vec2(12.9898, 78.233))) * 43758.5453); c.rgb += (n - 0.5) * 0.012; c.rgb *= 1.0 - uFade; gl_FragColor = c; }`,
+  });
+  composer.addPass(gradePass);
+  composer.addPass(new OutputPass());
+}
+function resize() {
+  VIEW.w = canvas.clientWidth || innerWidth; VIEW.h = canvas.clientHeight || innerHeight;
+  renderer.setPixelRatio(DPR); renderer.setSize(VIEW.w, VIEW.h, false);
+  composer.setPixelRatio(DPR); composer.setSize(VIEW.w, VIEW.h);
+  camera.aspect = VIEW.w / VIEW.h; camera.updateProjectionMatrix();
+  if (STU.floor?.isReflector) {
+    const rw = Math.round(VIEW.w * Math.min(DPR, 1.5) * 0.5), rh = Math.round(VIEW.h * Math.min(DPR, 1.5) * 0.5);
+    STU.floor.getRenderTarget().setSize(rw, rh); STU.floorU.uTexel.value.set(1 / rw, 1 / rh);
+  }
+}
+
+/* =====================================================================
+   9. CINEMATIC RIG — each scroll position maps to one camera + light state
+   ===================================================================== */
+const rig = { az: 32, el: 3.5, r: 7.4, tx: 0.15, ty: 0.6, tz: 0, fov: 30, fitW: 5.4, pan: -1, dy: 0,
+  key: 1, rim: 1, sweepX: -4, sweepI: 0, drl: 1, tail: 0.35, jaali: 0.42, crown: 1, glow: 0.3, exposure: 1,
+  explode: 0, xray: 0, flap: 0, steer: -9, aFront: 0, aSide: 0, aRear: 0, aTop: 0 };
+const intro = { fade: 0, dolly: 3.2, reveal: 0, drl: 0 };
+const KF = {
+  hero: { az: 32, el: 3.5, r: 7.4, tx: 0.15, ty: 0.6, tz: 0, fov: 30, fitW: 5.4, pan: -1, dy: 0.07 },
+  front: { az: 7, el: 7, r: 5.6, tx: 0.55, ty: 0.64, tz: 0, fov: 30, fitW: 3.0, pan: -1, dy: 0 },
+  side: { az: 90, el: 2, r: 11, tx: 0, ty: 0.74, tz: 0, fov: 24, fitW: 5.7, pan: -0.45, dy: -0.12 },
+  rear: { az: 215, el: 9, r: 6.3, tx: -1.0, ty: 0.74, tz: 0, fov: 30, fitW: 4.6, pan: 1, dy: 0 },
+  s1: { az: 275, el: 10, r: 7.6, tx: 0, ty: 0.66, tz: 0, fov: 30, fitW: 5.6, pan: -1, dy: 0 },
+  s2: { az: 395, el: 30, r: 7.8, tx: 0, ty: 0.6, tz: 0, fov: 30, fitW: 5.6, pan: -1, dy: 0 },
+  s3: { az: 485, el: 16, r: 7.6, tx: 0, ty: 0.64, tz: 0, fov: 30, fitW: 5.6, pan: -1, dy: 0 },
+  s4: { az: 575, el: 8, r: 7.4, tx: 0, ty: 0.66, tz: 0, fov: 30, fitW: 5.6, pan: -1, dy: 0 },
+  parts: { az: 680, el: 20, r: 7.6, tx: 0, ty: 0.62, tz: 0, fov: 30, fitW: 5.6, pan: -1, dy: 0 },
+  expl: { az: 700, el: 26, r: 10.5, tx: 0, ty: 0.95, tz: 0, fov: 32, fitW: 8.6, pan: -1, dy: 0 },
+  top: { az: 630, el: 86, r: 9.6, tx: 0, ty: 0.5, tz: 0, fov: 30, fitW: 5.4, pan: 1, dy: 0 },
+  reveal: { az: 755, el: 3, r: 7.0, tx: 0.1, ty: 0.6, tz: 0, fov: 28, fitW: 5.4, pan: -1, dy: 0 },
+};
+const SCENE_IDS = ['arrival', 'front', 'side', 'rear', 'spin', 'parts', 'explode', 'above', 'reveal'];
+const SCENE_STOP = [0, 150, 350, 540, 700, 1010, 1290, 1462, 1580];
+let TL = null, ST = null, SCROLL_VH = 1580, activeScene = 0, mode = 'cinematic', READY = false;
+function buildTimeline() {
+  const secs = $$('#story > section');
+  let acc = 0;
+  for (const s of secs) { s.style.setProperty('--vh', s.dataset.vh); acc += +s.dataset.vh; }
+  SCROLL_VH = acc - 100;
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'sine.inOut' } });
+  const to = (o, at, end, ease) => tl.to(rig, { ...o, duration: end - at, ease: ease || 'sine.inOut' }, at);
+  tl.set(rig, { ...KF.hero }, 0);
+  // camera path
+  to(KF.front, 30, 150); to(KF.side, 260, 350); to(KF.rear, 450, 540);
+  to(KF.s1, 625, 700, 'sine.in'); to(KF.s2, 700, 780, 'none'); to(KF.s3, 780, 865, 'none'); to(KF.s4, 865, 950, 'sine.out');
+  to(KF.parts, 950, 1010); to(KF.expl, 1110, 1170); to(KF.top, 1340, 1410); to(KF.reveal, 1520, 1580);
+  // front: light sweep, lamps and callouts
+  to({ steer: 0 }, 30, 150); to({ drl: 1.45 }, 140, 165); to({ drl: 1 }, 262, 285);
+  to({ sweepI: 1 }, 138, 158); to({ sweepX: 3.6 }, 150, 252, 'none'); to({ sweepI: 0 }, 252, 270);
+  to({ aFront: 1 }, 128, 160); to({ aFront: 0 }, 236, 264);
+  // side: dimensions
+  to({ aSide: 1 }, 335, 368); to({ aSide: 0 }, 440, 466);
+  // rear: tail lamps, flap, callouts
+  to({ tail: 1.5 }, 500, 540); to({ tail: 0.35 }, 622, 650);
+  to({ flap: 1 }, 522, 582, 'power2.inOut'); to({ flap: 0 }, 615, 646);
+  to({ aRear: 1 }, 528, 558); to({ aRear: 0 }, 610, 638);
+  // exploded view and x-ray
+  to({ explode: 1 }, 1170, 1292, 'power2.inOut'); to({ explode: 0 }, 1305, 1352, 'power2.inOut');
+  to({ crown: 0.12 }, 1340, 1410); to({ xray: 1 }, 1405, 1462, 'power1.inOut'); to({ xray: 0 }, 1495, 1532);
+  to({ aTop: 1 }, 1440, 1468); to({ aTop: 0 }, 1495, 1516);
+  // final reveal lighting
+  to({ crown: 1.45, jaali: 0.95, glow: 0.95, rim: 1.55, exposure: 1.06, steer: -9 }, 1520, 1580);
+  tl.to({ v: 0 }, { v: 1, duration: 1 }, SCROLL_VH - 1);
+  TL = tl;
+  ST = ScrollTrigger.create({
+    trigger: '#story', start: 'top top', end: 'bottom bottom', scrub: REDUCED ? true : 1.1, animation: tl,
+    onUpdate: (self) => onScrollProgress(self.progress),
+  });
+  secs.forEach((s, i) => ScrollTrigger.create({ trigger: s, start: 'top 50%', end: 'bottom 50%', onToggle: (self) => { s.classList.toggle('on', self.isActive); if (self.isActive) setActiveScene(i); } }));
+  onScrollProgress(0);
+}
+const progFill = $('#prog'), stats = $$('#spin [data-stat]');
+function onScrollProgress(p) {
+  progFill.style.transform = `scaleX(${p.toFixed(4)})`;
+  const v = p * SCROLL_VH, si = v >= 650 && v < 960 ? Math.min(3, Math.floor((v - 650) / 77)) : -1;
+  stats.forEach((li, i) => li.classList.toggle('on', i === si));
+}
+function setActiveScene(i) {
+  if (i === activeScene) return;
+  const prev = activeScene; activeScene = i;
+  $$('.nav-links a').forEach((a) => a.classList.toggle('on', +a.dataset.nav === i));
+  $$('.rail button').forEach((b) => b.classList.toggle('on', +b.dataset.goto === i));
+  if (prev === 5 && mode === 'cinematic') { setIsolate(false); select(null); }
+}
+function scrollToScene(i, smooth = true) {
+  const top = (SCENE_STOP[i] / 100) * innerHeight;
+  window.scrollTo({ top, behavior: smooth && !REDUCED ? 'smooth' : 'auto' });
+}
+
+/* ---------- camera solve (fit-to-frame on any aspect ratio) ---------- */
+const VO = { sx: 0, sy: 0 };
+let _t, _p, curTarget, _c1, _c2, _v, _v2; // created in initTemps() once three.js is loaded
+function initTemps() { _t = new THREE.Vector3(); _p = new THREE.Vector3(); curTarget = new THREE.Vector3(0, 0.6, 0); _c1 = new THREE.Color(0xf6b46a); _c2 = new THREE.Color(0xfff2df); _v = new THREE.Vector3(); _v2 = new THREE.Vector3(); }
+function solveRig(target, pos) {
+  const aspect = VIEW.w / VIEW.h, portrait = aspect < 0.9;
+  let fov = rig.fov;
+  if (portrait) fov = Math.min(fov * (1 + 0.85 * (0.9 - aspect)), 50);
+  const vf = fov * DEG, hf = 2 * Math.atan(Math.tan(vf / 2) * aspect);
+  const usable = portrait ? 1 : 1 - Math.abs(rig.pan) * 0.3;
+  const rFit = rig.fitW / 2 / Math.tan(hf / 2) / usable;
+  const r = Math.min(Math.max(rig.r, rFit), 17) + intro.dolly;
+  const az = rig.az * DEG, el = rig.el * DEG;
+  target.set(rig.tx, rig.ty, rig.tz);
+  pos.set(target.x + r * Math.cos(el) * Math.cos(az), target.y + r * Math.sin(el), target.z + r * Math.cos(el) * Math.sin(az));
+  return { fov, sx: portrait ? 0 : -rig.pan * 0.15, sy: portrait ? 0.15 : rig.dy };
+}
+function sph(pos, tgt) { const d = pos.clone().sub(tgt), r = d.length(); return { r, el: Math.asin(clamp(d.y / r, -1, 1)) / DEG, az: Math.atan2(d.z, d.x) / DEG }; }
+function setSph(pos, tgt, s) { const az = s.az * DEG, el = s.el * DEG; pos.set(tgt.x + s.r * Math.cos(el) * Math.cos(az), tgt.y + s.r * Math.sin(el), tgt.z + s.r * Math.cos(el) * Math.sin(az)); }
+function applyView(fov, sx, sy) {
+  camera.fov = fov; camera.aspect = VIEW.w / VIEW.h;
+  if (Math.abs(sx) > 1e-4 || Math.abs(sy) > 1e-4) camera.setViewOffset(VIEW.w, VIEW.h, -sx * VIEW.w, sy * VIEW.h, VIEW.w, VIEW.h); else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+}
+const BLEND = { t: 1, from: null };
+function updateCamera() {
+  if (mode === 'studio') {
+    controls.update();
+    curTarget.copy(controls.target);
+    applyView(lerp(camera.fov, 32, 0.08), VO.sx, VO.sy);
+    return;
+  }
+  const v = solveRig(_t, _p);
+  if (mode === 'toCine' && BLEND.from) {
+    const f = BLEND.from, k = BLEND.t;
+    const a = sph(f.pos, f.tgt), b = sph(_p, _t);
+    let daz = b.az - a.az; while (daz > 180) daz -= 360; while (daz < -180) daz += 360;
+    const tg = f.tgt.clone().lerp(_t, k);
+    setSph(camera.position, tg, { az: a.az + daz * k, el: lerp(a.el, b.el, k), r: lerp(a.r, b.r, k) });
+    camera.lookAt(tg); curTarget.copy(tg);
+    applyView(lerp(f.fov, v.fov, k), lerp(f.sx, v.sx, k), lerp(f.sy, v.sy, k));
+    return;
+  }
+  camera.position.copy(_p); camera.lookAt(_t); curTarget.copy(_t);
+  VO.sx = v.sx; VO.sy = v.sy;
+  applyView(v.fov, v.sx, v.sy);
+}
+
+/* =====================================================================
+   10. FRAME STATE — lights, lamps, explode, x-ray, schematic layer
+   ===================================================================== */
+const STUDIO = { explode: 0, xray: 0, flap: 0 };
+const STATE = { selected: null, isolated: false, light: 'studio' };
+const SCHEM_COMPS = ['battery', 'motor', 'bootVol', 'frunkVol'];
+function applyFrameState(t = 0) {
+  const studio = mode === 'studio';
+  const ex = studio ? STUDIO.explode : rig.explode, xr = studio ? STUDIO.xray : rig.xray, flap = studio ? STUDIO.flap : rig.flap;
+  // explode
+  for (const it of CAR.explode) { const k = sstep(0, 1, sat((ex - it.delay) / (1 - 0.34))); it.obj.position.copy(it.base).addScaledVector(it.dir, k); }
+  if (CAR.seam) CAR.seam.visible = ex < 0.002 && !STATE.isolated;
+  STU.ao.material.opacity = 0.9 * (1 - 0.5 * ex);
+  // x-ray scan
+  if (xr > 0.001) { SCAN.uScanX.value = lerp(2.6, -2.6, sstep(0, 1, xr)); SCAN.uScanGlow.value = xr < 0.995 ? 2.2 : 0; } else { SCAN.uScanX.value = 99; SCAN.uScanGlow.value = 0; }
+  const ghostsOn = xr > 0.001 || (STATE.isolated && STATE.selected);
+  MAT.ghost.uniforms.uMode.value = xr > 0.001 ? 1 : 0;
+  MAT.ghost.uniforms.uOpacity.value = xr > 0.001 ? 0.55 : 0.4;
+  if (ghostsOn) { CAR.root.updateMatrixWorld(); for (const g of CAR.ghosts) { const src = g.userData.src; g.visible = xr > 0.001 ? true : src.userData.comp !== STATE.selected; if (g.visible) g.matrix.copy(src.matrixWorld); } }
+  else if (CAR._ghostsWereOn) for (const g of CAR.ghosts) g.visible = false;
+  CAR._ghostsWereOn = ghostsOn;
+  // schematic layer
+  const sel = STATE.selected, selSchem = SCHEM_COMPS.includes(sel);
+  const so = Math.max(xr, ex * 0.95, selSchem ? 1 : 0);
+  MAT.battery.opacity = so; MAT.motor.opacity = so * 0.92; MAT.volume.opacity = so * 0.055; MAT.volumeEdge.opacity = so * 0.9;
+  for (const m of CAR.schematic) m.visible = so > 0.01 && (!STATE.isolated || !sel || m.userData.comp === sel);
+  // lamps, flap, steering
+  MAT.drl.emissiveIntensity = 2.6 * rig.drl * intro.drl;
+  for (const m of CAR.lights.projectors || []) m.emissiveIntensity = 0.6 * intro.drl;
+  MAT.tailLED.emissiveIntensity = 2.2 * rig.tail * (0.3 + 0.7 * intro.fade);
+  MAT.tailLens.emissiveIntensity = 0.4 * rig.tail;
+  if (CAR.flap) CAR.flap.rotation.y = -sstep(0, 1, flap) * 1.75;
+  MAT.portRing.emissiveIntensity = 2.4 * sstep(0.4, 1, flap) * (0.75 + 0.25 * Math.sin(t * 3));
+  for (const w of CAR.frontWheels) w.rotation.y = (studio ? 0 : rig.steer) * DEG;
+  // lights
+  const f = intro.fade, camAz = Math.atan2(camera.position.z - curTarget.z, camera.position.x - curTarget.x);
+  STU.key.intensity = 110 * (studio ? 1 : rig.key) * f;
+  STU.hemi.intensity = 0.9 * (0.3 + 0.7 * f);
+  STU.fill.intensity = 0.6 * f;
+  const rimK = (studio ? 1 : rig.rim) * f;
+  STU.rimW.position.set(Math.cos(camAz + Math.PI + 0.7) * 6.2, 2.3, Math.sin(camAz + Math.PI + 0.7) * 6.2); STU.rimW.intensity = 120 * rimK;
+  STU.rimC.position.set(Math.cos(camAz + Math.PI - 0.7) * 6.2, 2.5, Math.sin(camAz + Math.PI - 0.7) * 6.2); STU.rimC.intensity = 95 * rimK;
+  STU.sweep.intensity = studio ? 0 : 9 * rig.sweepI; STU.sweep.position.x = rig.sweepX;
+  if (STU.floorU) { STU.floorU.uGlow.value = studio ? 0.4 : rig.glow; STU.floorU.uReveal.value = intro.reveal; STU.floorU.uFogDensity.value = scene.fog.density; }
+  else if (STU.floorMat) STU.floorMat.emissiveIntensity = 0.25 * intro.reveal * (0.6 + rig.glow);
+  STU.jaaliMat.color.copy(_c1).multiplyScalar(1.2 * (studio ? 0.7 : rig.jaali) * (0.15 + 0.85 * f));
+  STU.crownMat.color.copy(_c2).multiplyScalar(2.4 * (studio ? 1 : rig.crown) * f);
+  STU.crown.visible = (studio ? 1 : rig.crown) > 0.05;
+  STU.cone.uniforms.uI.value = 0; // canvas studio: no light shaft, crown or floor rings
+  STU.crown.visible = false;
+  STU.rings.forEach((m) => { m.visible = false; });
+  renderer.toneMappingExposure = (studio ? 1 : rig.exposure) * (0.75 + 0.25 * f); // intro fades up from a soft grey, not black
+  if (gradePass) gradePass.uniforms.uTime.value = t % 100;
+  MAT.highlight.uniforms.uTime.value = t;
+}
+
+/* =====================================================================
+   11. ANNOTATIONS — dimension lines and callouts projected from 3D
+   ===================================================================== */
+const ANN = [], SVGNS = 'http://www.w3.org/2000/svg';
+const annG = $('#annot-g'), labelsEl = $('#labels');
+function mkSvg(tag, cls) { const e = document.createElementNS(SVGNS, tag); if (cls) e.setAttribute('class', cls); annG.appendChild(e); return e; }
+function mkLabel(cls, b, s) { const d = document.createElement('div'); d.className = `lab ${cls}`; d.innerHTML = `<b>${b}</b>${s ? `<small>${s}</small>` : ''}`; labelsEl.appendChild(d); return d; }
+function dimLine(group, a, b, off, label, sub, opt = {}) {
+  const g = document.createElementNS(SVGNS, 'g'); annG.appendChild(g);
+  const mk = (cls) => { const e = document.createElementNS(SVGNS, 'line'); if (cls) e.setAttribute('class', cls); g.appendChild(e); return e; };
+  ANN.push({ type: 'dim', group, a: new THREE.Vector3(...a), b: new THREE.Vector3(...b), off: new THREE.Vector3(...off), g, e1: mk('ext'), e2: mk('ext'), main: mk(''), t1: mk(''), t2: mk(''), el: mkLabel('dim', label, sub), ...opt });
+}
+function callout(group, p, label, sub, dx, dy, opt = {}) {
+  const g = document.createElementNS(SVGNS, 'g'); annG.appendChild(g);
+  const pl = document.createElementNS(SVGNS, 'polyline'); pl.setAttribute('class', 'lead'); g.appendChild(pl);
+  const c = document.createElementNS(SVGNS, 'circle'); c.setAttribute('r', '3'); g.appendChild(c);
+  const c2 = document.createElementNS(SVGNS, 'circle'); c2.setAttribute('r', '8'); c2.setAttribute('class', 'ring'); g.appendChild(c2);
+  ANN.push({ type: 'call', group, p: new THREE.Vector3(...p), dx, dy, g, pl, c, c2, el: mkLabel('call', label, sub), ...opt });
+}
+function buildAnnotations() {
+  const zS = 0.97;
+  dimLine('aSide', [XF, 0, zS], [XFA, 0, zS], [0, -0.07, 0], '790 mm', 'front overhang');
+  dimLine('aSide', [XFA, 0, zS], [XRA, 0, zS], [0, -0.07, 0], '2,650 mm', 'wheelbase');
+  dimLine('aSide', [XRA, 0, zS], [XR, 0, zS], [0, -0.07, 0], '810 mm', 'rear overhang');
+  dimLine('aSide', [XF, 0, zS], [XR, 0, zS], [0, -0.25, 0], '4,250 mm', 'overall length');
+  dimLine('aSide', [XR, 0, zS], [XR, PKG.H, zS], [-0.2, 0, 0], '1,550 mm', 'overall height', { vertical: true });
+  dimLine('aSide', [-0.45, 0, zS], [-0.45, PKG.GC, zS], [0, 0, 0], '180 mm', 'clearance (145 loaded)', { small: true });
+  callout('aSide', [XFA, WHEEL_Y + 0.12, 0.9], '195/65 R15', 'Ø ≈ 634 mm, computed', 40, -150);
+  callout('aSide', [0.1, 0.605, 0.62], '605 mm', 'seat height', -30, -190);
+  const hx = surfX(1, 0.7, 0.85);
+  callout('aFront', [hx, 0.85, -0.7], 'Wrap-around headlamp', 'light strip runs into the grille', 120, -120);
+  callout('aFront', [bodyX(1, 0.73, 0.2), 0.73, -0.2], 'Gloss-black grille', 'Suzuki emblem', 60, -220);
+  callout('aFront', [surfX(1, 0.64, 0.5), 0.5, -0.64], 'Vertical light signature', 'corner air intake', 150, 30);
+  callout('aFront', [1.7, bodyY(1.7, 0.2) + 0.01, -0.2], '30 L frunk', 'under the bonnet', 40, -180, { desktopOnly: true });
+  dimLine('aFront', [XF + 0.06, 0, -HW], [XF + 0.06, 0, HW], [0, -0.08, 0], '1,780 mm', 'overall width');
+  const tx = surfX(-1, 0.75, 1.02);
+  callout('aRear', [tx, 1.02, -0.75], 'Wrap-around tail lamp', 'shape approximated', -170, -110);
+  callout('aRear', [-1.395, 0.985, -bodyZ(-1.395, 0.985) - 0.03], 'CCS2 port', '11 kW AC · 120 kW DC', -40, -170);
+  callout('aRear', [-1.85, bodyY(-1.85, 0) + 0.01, 0], '400 L boot', 'locked, two large suitcases', -120, -200, { desktopOnly: true });
+  dimLine('aRear', [XRA, 0, -0.97], [XR, 0, -0.97], [0, -0.07, 0], '810 mm', 'rear overhang · boot');
+  callout('aTop', [-0.4, 0.31, 0.3], '55 kWh sodium-ion', 'pack under the floor · schematic', 120, -90);
+  callout('aTop', [XFA, 0.56, 0], '110 kW motor · FWD', 'schematic', 100, -110);
+  callout('aTop', [-1.62, 1.0, 0], '400 L boot', 'volume to scale', -60, -130);
+  callout('aTop', [1.66, 0.8, 0], '30 L frunk', 'volume to scale', 60, 110, { desktopOnly: true });
+  dimLine('aTop', [XFA, 0.25, -1.02], [XRA, 0.25, -1.02], [0, 0, 0], '2,650 mm', 'wheelbase, battery inside it');
+}
+function toScreen(v, out) { _v.copy(v).project(camera); out.x = (_v.x * 0.5 + 0.5) * VIEW.w; out.y = (-_v.y * 0.5 + 0.5) * VIEW.h; out.z = _v.z; return out; }
+const S1 = {}, S2 = {}, S3 = {}, S4 = {};
+function updateAnnotations() {
+  const show = mode === 'cinematic';
+  const small = VIEW.w < 760;
+  for (const a of ANN) {
+    let op = show ? rig[a.group] : 0;
+    if (a.desktopOnly && small) op = 0;
+    if (op < 0.01) { if (a.vis) { a.vis = false; a.g.style.display = 'none'; a.el.style.opacity = 0; } continue; }
+    if (!a.vis) { a.vis = true; a.g.style.display = ''; }
+    a.g.style.opacity = op; a.el.style.opacity = op;
+    if (a.type === 'dim') {
+      toScreen(a.a, S1); toScreen(a.b, S2); toScreen(_v2.copy(a.a).add(a.off), S3); toScreen(_v2.copy(a.b).add(a.off), S4);
+      const set = (e, p, q) => { e.setAttribute('x1', p.x.toFixed(1)); e.setAttribute('y1', p.y.toFixed(1)); e.setAttribute('x2', q.x.toFixed(1)); e.setAttribute('y2', q.y.toFixed(1)); };
+      const hasOff = a.off.lengthSq() > 0;
+      a.e1.style.display = a.e2.style.display = hasOff ? '' : 'none';
+      if (hasOff) { set(a.e1, S1, S3); set(a.e2, S2, S4); }
+      set(a.main, S3, S4);
+      const dx = S4.x - S3.x, dy = S4.y - S3.y, L = Math.hypot(dx, dy) || 1, nx = (-dy / L) * 6, ny = (dx / L) * 6;
+      set(a.t1, { x: S3.x - nx, y: S3.y - ny }, { x: S3.x + nx, y: S3.y + ny });
+      set(a.t2, { x: S4.x - nx, y: S4.y - ny }, { x: S4.x + nx, y: S4.y + ny });
+      const mx = (S3.x + S4.x) / 2, my = (S3.y + S4.y) / 2;
+      if (a.small) a.el.style.transform = `translate(${(S4.x + 12).toFixed(1)}px, ${S4.y.toFixed(1)}px) translate(0, -100%)`;
+      else if (a.vertical) a.el.style.transform = `translate(${(mx - 14).toFixed(1)}px, ${my.toFixed(1)}px) translate(-100%, -50%)`;
+      else a.el.style.transform = `translate(${mx.toFixed(1)}px, ${my.toFixed(1)}px) translate(-50%, -50%)`;
+    } else {
+      toScreen(a.p, S1);
+      if (!a.w) a.w = a.el.offsetWidth || 170;
+      const k = small ? 0.55 : 1;
+      let dir = a.dx >= 0 ? 1 : -1, lx = S1.x + a.dx * k;
+      if (dir > 0 && lx + a.w > VIEW.w - 40) { dir = -1; lx = S1.x - Math.abs(a.dx) * k; }
+      else if (dir < 0 && lx - a.w < 12) { dir = 1; lx = S1.x + Math.abs(a.dx) * k; }
+      const ly = clamp(S1.y + a.dy * k, 84, VIEW.h - 40), ex = lx - dir * 10;
+      a.pl.setAttribute('points', `${S1.x.toFixed(1)},${S1.y.toFixed(1)} ${ex.toFixed(1)},${ly.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)}`);
+      a.c.setAttribute('cx', S1.x.toFixed(1)); a.c.setAttribute('cy', S1.y.toFixed(1));
+      a.c2.setAttribute('cx', S1.x.toFixed(1)); a.c2.setAttribute('cy', S1.y.toFixed(1));
+      a.el.style.transform = `translate(${lx.toFixed(1)}px, ${ly.toFixed(1)}px) translate(${dir > 0 ? '0' : '-100%'}, -50%)`;
+    }
+  }
+}
+
+/* =====================================================================
+   12. INTERACTION — picking, inspector, isolation, studio mode
+   ===================================================================== */
+let RAY = null;
+const HL = [];
+const insp = { el: $('#inspector'), tag: $('#insp-tag'), title: $('#insp-title'), desc: $('#insp-desc'), specs: $('#insp-specs'), src: $('#insp-src'), iso: $('#insp-isolate') };
+function visibleChain(o) { for (let n = o; n; n = n.parent) if (!n.visible) return false; return true; }
+function pickAt(cx, cy) {
+  const rect = canvas.getBoundingClientRect();
+  const ndc = new THREE.Vector2(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1);
+  RAY.setFromCamera(ndc, camera);
+  const xr = (mode === 'studio' ? STUDIO.xray : rig.xray) > 0.5;
+  const list = CAR.pick.filter((m) => visibleChain(m));
+  const hits = RAY.intersectObjects(list, false);
+  for (const h of hits) {
+    const c = h.object.userData.comp; if (!c) continue;
+    const schem = SCHEM_COMPS.includes(c);
+    if (xr && !schem && c !== 'cabin' && c !== 'wheels') continue;
+    if (!xr && schem && STATE.selected !== c) continue;
+    return c;
+  }
+  return null;
+}
+function clearHighlight() { while (HL.length) { const h = HL.pop(); h.parent?.remove(h); } }
+function select(comp, { frame = false } = {}) {
+  clearHighlight();
+  STATE.selected = comp || null;
+  if (!comp) { insp.el.classList.remove('on'); updateChips(); if (STATE.isolated) setIsolate(false); return; }
+  for (const m of CAR.comps[comp] || []) { if (!m.isMesh || m.material === MAT.inner || m.isLineSegments) continue; const h = new THREE.Mesh(m.geometry, MAT.highlight); h.raycast = () => {}; h.renderOrder = 9; m.add(h); HL.push(h); }
+  const d = INFO[comp];
+  if (d) {
+    insp.tag.textContent = d.tag; insp.title.textContent = d.name; insp.desc.textContent = d.desc;
+    insp.specs.innerHTML = d.specs.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('') || '<dt>Specs</dt><dd>None published in the deck</dd>';
+    insp.src.textContent = d.src || '';
+    insp.el.classList.add('on');
+  }
+  if (STATE.isolated) applyIsolation();
+  updateChips();
+  if (frame && mode === 'studio') frameComponent(comp);
+}
+function applyIsolation() {
+  const on = STATE.isolated && STATE.selected;
+  for (const comp in CAR.comps) for (const m of CAR.comps[comp]) m.visible = !on || comp === STATE.selected;
+  insp.iso.setAttribute('aria-pressed', on ? 'true' : 'false');
+  insp.iso.textContent = on ? 'Isolated' : 'Isolate';
+}
+function setIsolate(on) { STATE.isolated = !!on && !!STATE.selected; if (STATE.isolated) { if (mode === 'studio' && STUDIO.xray > 0) gsap.to(STUDIO, { xray: 0, duration: 0.6 }); } applyIsolation(); }
+function restoreCar() {
+  STATE.isolated = false; applyIsolation(); select(null);
+  if (mode === 'studio') { gsap.to(STUDIO, { explode: 0, xray: 0, flap: 0, duration: 1.1, ease: 'power2.inOut' }); setPressed('explode', false); setPressed('xray', false); }
+}
+function updateChips() { $$('.chip').forEach((c) => c.setAttribute('aria-pressed', c.dataset.part === STATE.selected ? 'true' : 'false')); }
+function frameComponent(comp) {
+  const box = new THREE.Box3(); let any = false;
+  for (const m of CAR.comps[comp] || []) { if (!m.isMesh) continue; m.updateWorldMatrix(true, false); box.expandByObject(m); any = true; }
+  if (!any || box.isEmpty()) return;
+  const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()).length();
+  const s = sph(camera.position, controls.target);
+  tweenOrbit({ az: s.az, el: s.el, r: clamp(size * 1.6 + 1.2, 3.2, 12), tx: c.x, ty: c.y, tz: c.z });
+}
+let ORBIT_TW = null;
+function tweenOrbit(to, dur = 1.2) {
+  const s0 = sph(camera.position, controls.target);
+  const s = { az: s0.az, el: s0.el, r: s0.r, tx: controls.target.x, ty: controls.target.y, tz: controls.target.z };
+  let az = to.az; while (az - s.az > 180) az -= 360; while (az - s.az < -180) az += 360;
+  ORBIT_TW?.kill();
+  ORBIT_TW = gsap.to(s, { az, el: to.el, r: to.r, tx: to.tx ?? s.tx, ty: to.ty ?? s.ty, tz: to.tz ?? s.tz, duration: REDUCED ? 0.01 : dur, ease: 'power3.inOut',
+    onUpdate: () => { controls.target.set(s.tx, s.ty, s.tz); setSph(camera.position, controls.target, s); } });
+}
+const PRESETS = { front: { az: 0, el: 6, r: 6.6 }, side: { az: 90, el: 4, r: 8.6 }, rear: { az: 180, el: 8, r: 6.8 }, top: { az: 90, el: 86, r: 10 }, three: { az: 36, el: 14, r: 7.6 } };
+function presetR(r) { const aspect = VIEW.w / VIEW.h; return aspect < 0.9 ? r * (1 + (0.9 - aspect) * 1.6) : r; }
+function goPreset(name) { const p = PRESETS[name]; if (!p) return; tweenOrbit({ az: p.az, el: p.el, r: presetR(p.r), tx: 0, ty: 0.62, tz: 0 }); }
+function setPressed(act, on) { const b = $(`#studio [data-sact="${act}"]`); if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+
+function enterStudio(opts = {}) {
+  if (!READY || mode === 'studio') return;
+  if (STATE.isolated) setIsolate(false);
+  mode = 'studio';
+  document.documentElement.classList.add('studio', 'lock');
+  $('#btn-studio').setAttribute('aria-pressed', 'true');
+  controls.target.copy(curTarget);
+  controls.connect(); controls.enabled = true; controls.update();
+  gsap.to(VO, { sx: 0, sy: 0, duration: 0.9, ease: 'power2.out' });
+  STUDIO.explode = rig.explode; STUDIO.xray = 0; STUDIO.flap = rig.flap;
+  gsap.to(STUDIO, { explode: opts.explode ? 1 : 0, flap: 0, duration: 1.4, ease: 'power2.inOut' });
+  setPressed('explode', !!opts.explode); setPressed('xray', false);
+  if (!opts.keepView) goPreset('three');
+  toast('3D studio: drag to rotate, scroll or pinch to zoom, tap a part to inspect.');
+}
+function exitStudio() {
+  if (mode !== 'studio') return;
+  ORBIT_TW?.kill();
+  controls.enabled = false; controls.autoRotate = false; setPressed('spin', false); controls.disconnect();
+  canvas.style.touchAction = '';
+  document.documentElement.classList.remove('studio', 'lock');
+  $('#btn-studio').setAttribute('aria-pressed', 'false');
+  $('#parts-pop').classList.remove('on'); setPressed('parts', false);
+  restoreCar();
+  BLEND.from = { pos: camera.position.clone(), tgt: controls.target.clone(), fov: camera.fov, sx: VO.sx, sy: VO.sy };
+  BLEND.t = 0; mode = 'toCine';
+  gsap.to(BLEND, { t: 1, duration: REDUCED ? 0.01 : 1.2, ease: 'power2.inOut', onComplete: () => { mode = 'cinematic'; BLEND.from = null; } });
+  STUDIO.explode = 0; STUDIO.xray = 0; STUDIO.flap = 0;
+}
+let toastTimer = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 3400); }
+
+function setupControls() {
+  RAY = new THREE.Raycaster();
+  controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.07; controls.enablePan = false;
+  controls.minDistance = 2.8; controls.maxDistance = 17; controls.maxPolarAngle = 88 * DEG;
+  controls.rotateSpeed = 0.7; controls.zoomSpeed = 0.8; controls.autoRotateSpeed = 0.9;
+  controls.enabled = false; controls.disconnect(); canvas.style.touchAction = '';
+  controls.addEventListener('start', () => ORBIT_TW?.kill());
+}
+
+/* ---------- UI wiring ---------- */
+function setupUI() {
+  const chipHTML = CHIP_ORDER.map((k) => `<button class="chip" type="button" data-part="${k}" aria-pressed="false">${CHIP_LABEL[k]}</button>`).join('');
+  $('#chips').innerHTML = chipHTML; $('#chips-studio').innerHTML = chipHTML;
+  document.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip'); if (chip) { const k = chip.dataset.part; select(STATE.selected === k ? null : k, { frame: mode === 'studio' }); return; }
+    const act = e.target.closest('[data-act]'); if (act) {
+      const a = act.dataset.act;
+      if (a === 'studio') enterStudio(); else if (a === 'studio-explode') enterStudio({ explode: true }); else if (a === 'restart') restart();
+      return;
+    }
+    const go = e.target.closest('[data-goto]'); if (go) { scrollToScene(+go.dataset.goto); return; }
+    const nav = e.target.closest('.nav-links a, a.plate, .hero .btn.primary'); if (nav && nav.hash) { e.preventDefault(); const i = SCENE_IDS.indexOf(nav.hash.slice(1)); if (mode === 'studio') exitStudio(); scrollToScene(Math.max(0, i)); return; }
+    const p = e.target.closest('[data-preset]'); if (p) { goPreset(p.dataset.preset); return; }
+    const s = e.target.closest('[data-sact]'); if (s) studioAction(s.dataset.sact);
+  });
+  $('#btn-studio').addEventListener('click', () => (mode === 'studio' ? exitStudio() : enterStudio()));
+  $('#insp-close').addEventListener('click', () => select(null));
+  $('#insp-isolate').addEventListener('click', () => setIsolate(!STATE.isolated));
+  $('#insp-restore').addEventListener('click', restoreCar);
+  $('#btn-light').addEventListener('click', toggleLighting);
+  const fsBtn = $('#btn-full');
+  const fsOK = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+  if (!fsOK) { fsBtn.disabled = true; fsBtn.title = 'Full screen is not supported by this browser'; }
+  fsBtn.addEventListener('click', toggleFullscreen);
+  // picking: on the canvas in the studio, on the page in the component scene
+  let down = null, hoverT = 0;
+  const canPick = () => READY && (mode === 'studio' || (mode === 'cinematic' && activeScene === 5));
+  const uiTarget = (el) => !!el.closest('button, a, .panel, #inspector, #studio, #parts-pop, .nav, .rail');
+  window.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now(), ui: uiTarget(e.target) }; }, { passive: true });
+  window.addEventListener('pointerup', (e) => {
+    if (!down || down.ui || !canPick()) { down = null; return; }
+    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y), dt = performance.now() - down.t; down = null;
+    if (moved > 6 || dt > 600) return;
+    const c = pickAt(e.clientX, e.clientY);
+    select(c, { frame: false });
+  }, { passive: true });
+  window.addEventListener('pointermove', (e) => {
+    if (!canPick() || e.pointerType !== 'mouse' || e.buttons) return;
+    const now = performance.now(); if (now - hoverT < 90) return; hoverT = now;
+    const over = uiTarget(e.target) ? null : pickAt(e.clientX, e.clientY);
+    document.documentElement.classList.toggle('hovering', !!over);
+  }, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (e.target.closest('input, textarea')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'escape') { if ($('#parts-pop').classList.contains('on')) { $('#parts-pop').classList.remove('on'); setPressed('parts', false); } else if (mode === 'studio') exitStudio(); else select(null); return; }
+    if (k === 'f') { toggleFullscreen(); return; }
+    if (k === 'l') { toggleLighting(); return; }
+    if (k === 's' && !e.metaKey && !e.ctrlKey) { mode === 'studio' ? exitStudio() : enterStudio(); return; }
+    if (mode !== 'studio') return;
+    const map = { 1: 'front', 2: 'side', 3: 'rear', 4: 'top', 5: 'three' };
+    if (map[k]) { goPreset(map[k]); return; }
+    if (k === '+' || k === '=') studioAction('zoomin'); else if (k === '-' || k === '_') studioAction('zoomout');
+    else if (k === 'e') studioAction('explode'); else if (k === 'x') studioAction('xray'); else if (k === 'r') studioAction('reset');
+    else if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(k)) {
+      e.preventDefault(); const s = sph(camera.position, controls.target);
+      tweenOrbit({ az: s.az + (k === 'arrowleft' ? -12 : k === 'arrowright' ? 12 : 0), el: clamp(s.el + (k === 'arrowup' ? 8 : k === 'arrowdown' ? -8 : 0), 1, 86), r: s.r }, 0.45);
+    }
+  });
+  let rt = 0;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { resize(); }, 120); });
+  document.addEventListener('fullscreenchange', () => $('#btn-full').setAttribute('aria-pressed', document.fullscreenElement ? 'true' : 'false'));
+}
+function studioAction(a) {
+  if (a === 'exit') return exitStudio();
+  if (mode !== 'studio') return;
+  const s = sph(camera.position, controls.target);
+  if (a === 'zoomin') tweenOrbit({ az: s.az, el: s.el, r: Math.max(controls.minDistance, s.r * 0.8) }, 0.5);
+  else if (a === 'zoomout') tweenOrbit({ az: s.az, el: s.el, r: Math.min(controls.maxDistance, s.r * 1.25) }, 0.5);
+  else if (a === 'reset') { restoreCar(); goPreset('three'); }
+  else if (a === 'spin') { controls.autoRotate = !controls.autoRotate; setPressed('spin', controls.autoRotate); }
+  else if (a === 'explode') { const on = STUDIO.explode < 0.5; if (on && STATE.isolated) setIsolate(false); gsap.to(STUDIO, { explode: on ? 1 : 0, duration: REDUCED ? 0.01 : 1.6, ease: 'power2.inOut' }); setPressed('explode', on); if (on) tweenOrbit({ az: s.az, el: Math.max(s.el, 22), r: Math.max(s.r, presetR(10.5)), tx: 0, ty: 0.9, tz: 0 }); }
+  else if (a === 'xray') { const on = STUDIO.xray < 0.5; if (on && STATE.isolated) setIsolate(false); gsap.to(STUDIO, { xray: on ? 1 : 0, duration: REDUCED ? 0.01 : 1.8, ease: 'power1.inOut' }); setPressed('xray', on); }
+  else if (a === 'parts') { const p = $('#parts-pop'); const on = !p.classList.contains('on'); p.classList.toggle('on', on); setPressed('parts', on); }
+  else if (a === 'restore') restoreCar();
+}
+function toggleFullscreen() {
+  const d = document, el = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  else if (el.requestFullscreen) el.requestFullscreen().catch(() => toast('Full screen was blocked by the browser.'));
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+function toggleLighting() {
+  if (!READY) return;
+  const dusk = STATE.light !== 'dusk'; STATE.light = dusk ? 'dusk' : 'studio';
+  $('#btn-light').setAttribute('aria-pressed', dusk ? 'true' : 'false');
+  const o = { k: 1 };
+  gsap.to(o, { k: 0.15, duration: 0.35, ease: 'power1.in', onUpdate: () => (scene.environmentIntensity = o.k), onComplete: () => {
+    scene.environment = dusk ? STU.envDusk : STU.envStudio;
+    STU.key.color.set(dusk ? 0xffd3a1 : 0xfff3e4); STU.hemi.color.set(dusk ? 0xffe2c4 : 0xffffff);
+    STU.rimW.color.set(dusk ? 0xff8a3d : 0xfff4ea); STU.rimC.color.set(dusk ? 0x6d7cff : 0xeef3ff);
+    if (STU.floorU) STU.floorU.uPool.value.setRGB(dusk ? 0.06 : 0.04, dusk ? 0.035 : 0.04, dusk ? 0.02 : 0.045);
+    gsap.to(o, { k: 1, duration: 0.6, ease: 'power1.out', onUpdate: () => (scene.environmentIntensity = o.k) });
+  } });
+  toast(dusk ? 'Dusk lighting: warm saffron rim, softer key.' : 'Studio lighting: neutral softboxes.');
+}
+function restart() {
+  if (mode === 'studio') exitStudio();
+  select(null);
+  gsap.to(gradePass.uniforms.uFade, { value: 1, duration: REDUCED ? 0.01 : 0.6, ease: 'power2.in', onComplete: () => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    ScrollTrigger.update(); ST?.getTween?.()?.progress(1); TL.progress(0);
+    playIntro();
+    gsap.to(gradePass.uniforms.uFade, { value: 0, duration: 0.9, delay: 0.15, ease: 'power2.out' });
+  } });
+}
+function playIntro() {
+  if (REDUCED) { Object.assign(intro, { fade: 1, dolly: 0, reveal: 1, drl: 1 }); return; }
+  Object.assign(intro, { fade: 0, dolly: 3.2, reveal: 0, drl: 0 });
+  const t = gsap.timeline();
+  setTimeout(() => document.documentElement.classList.add('introduced'), 3200);
+  t.to(intro, { fade: 1, duration: 2.8, ease: 'power2.inOut' }, 0.15)
+    .to(intro, { dolly: 0, duration: 3.6, ease: 'power3.out' }, 0)
+    .to(intro, { reveal: 1, duration: 3.0, ease: 'power2.out' }, 0.7)
+    .to(intro, { drl: 1, duration: 0.3, ease: 'steps(3)' }, 1.6);
+}
+
+/* =====================================================================
+   13. LOOP, PERFORMANCE GUARD, BOOT
+   ===================================================================== */
+const clock = { last: performance.now(), t: 0 };
+const perfS = { acc: 0, n: 0, drops: 0 };
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min((now - clock.last) / 1000, 0.1); clock.last = now; clock.t += dt;
+  updateCamera();
+  applyFrameState(clock.t);
+  updateAnnotations();
+  composer.render(dt);
+  perfS.acc += dt; perfS.n++;
+  if (perfS.n >= 120) {
+    const avg = perfS.acc / perfS.n; perfS.acc = 0; perfS.n = 0;
+    if (avg > 1 / 30 && DPR > 1 && perfS.drops < 3 && document.visibilityState === 'visible') { DPR = Math.max(1, DPR - 0.25); perfS.drops++; resize(); }
+  }
+}
+async function boot() {
+  try {
+    Loader.set(0.01, 'Loading the 3D engine');
+    await loadLibraries();
+    if (!window.gsap || !window.ScrollTrigger) throw new FatalError('Animation library missing', 'GSAP and ScrollTrigger are loaded from cdnjs.cloudflare.com and could not be reached. Check the connection or any content blocker, then reload.');
+    gsap.registerPlugin(ScrollTrigger);
+    initTemps();
+    if (!webgl2Available()) throw new FatalError('WebGL 2 is not available', 'This experience renders the car in real time and needs WebGL 2. Turn on hardware acceleration in the browser settings, or use a current version of Chrome, Edge, Firefox or Safari.');
+    Loader.set(0.04, 'Loading typefaces');
+    await Promise.race([document.fonts.ready, wait(2500)]);
+    try { await Promise.race([Promise.all([document.fonts.load('600 40px Rajdhani', 'आरोह AAROH'), document.fonts.load('700 60px Manrope', 'MARUTI SUZUKI'), document.fonts.load('700 40px Sora', 'AAROH')]), wait(2500)]); } catch { /* fall back to system fonts */ }
+    initRenderer();
+    Loader.set(0.07, 'Lighting the studio');
+    makeCarTextures(); makeMaterials();
+    buildStudio(scene, renderer);
+    initComposer();
+    await yieldUI();
+    await buildCar(scene, (p, label) => Loader.set(0.09 + p * 0.8, label));
+    Loader.set(0.9, 'Compiling shaders');
+    setupControls(); setupUI(); buildAnnotations(); buildTimeline();
+    await yieldUI();
+    updateCamera(); applyFrameState(0);
+    renderer.compile(scene, camera);
+    composer.render(0.016);
+    Loader.set(0.98, 'Final checks');
+    await yieldUI();
+    READY = true;
+    Object.assign(window.__aaroh, { ready: true, scrollToScene, enterStudio, exitStudio, goPreset, select, setIsolate, studioAction, restart, rig, STUDIO, orbit: (v) => tweenOrbit(v, 0.01), info: () => ({ triangles: renderer.info.render.triangles, calls: renderer.info.render.calls, dpr: DPR }) });
+    window.scrollTo(0, 0); // land on Arrival even if the browser scrolled during the build
+    document.documentElement.classList.add('ready');
+    Loader.done();
+    playIntro();
+    requestAnimationFrame((t) => { clock.last = t; frame(t); });
+  } catch (err) {
+    console.error(err);
+    window.__aaroh.errors.push(String(err && (err.stack || err.message || err)));
+    if (err instanceof FatalError) showFatal(err.title, err.message);
+    else showFatal('The experience could not start', 'An unexpected error stopped the 3D scene from loading. Reload to try again; the details below help with debugging.', String(err && (err.stack || err.message || err)));
+  }
+}
+boot();
+</script>
+</body>
+</html>
